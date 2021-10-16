@@ -372,13 +372,16 @@ local function get_dirt(z,x)
 			else
 				eco = "n7"
 			end
-		else
+		elseif n8 == bmax then
 			if n8 > eco_threshold then
 				eco = "n16"
 			else
 				eco = "n8"
 			end
 		end
+	end
+	if not eco or eco == "" then
+		eco = "n0"
 	end
 	
 	--return dirt, lawn
@@ -2057,9 +2060,11 @@ minetest.register_on_generated(function(minp, maxp, seed)
 				end
 				v6_height = (d_height * 0.25) + (d_humid * 0.5)
 			end
+			
+			local nterrain = v7_height + v6_height
 
 			local vheight = (bterrain * 0.30) + ((((bterrain / bcontinental) * (mg_world_scale / 0.01)) * 0.30) * 0.35)
-			local vterrain = (((bterrain + v7_height) * 0.25) + (((bterrain / bcontinental) * (mg_world_scale / 0.01)) * 0.35) + ((v7_height * (bterrain / mg_base_height)) * 0.5) * 0.35)
+			local vterrain = (((bterrain + nterrain) * 0.25) + (((bterrain / bcontinental) * (mg_world_scale / 0.01)) * 0.35) + ((nterrain * (bterrain / mg_base_height)) * 0.5) * 0.35)
 
 			mg_earth.valleymap[index2d] = -31000
 			mg_earth.riverpath[index2d] = 0
@@ -2255,26 +2260,34 @@ minetest.register_on_generated(function(minp, maxp, seed)
 
 				if mg_ecosystems then
 					if (mg_earth.heightmap[index2d] > max_beach) and (mg_earth.heightmap[index2d] < max_highland) then
-						if mg_earth.eco_map[index2d] ~= "n0" then
-							--minetest.log(t_biome .. ", " .. t_eco)
-							t_stone				= gal.ecosystems[t_biome][t_eco].stone
-							t_filler			= gal.ecosystems[t_biome][t_eco].fill
-							t_top				= gal.ecosystems[t_biome][t_eco].top
-							t_water				= mg_earth.biome_info[t_biome].b_water
-							t_river				= gal.ecosystems[t_biome][t_eco].river
-							t_riverbed_depth	= mg_earth.biome_info[t_biome].b_riverbed_depth
+						if (not string.find(t_biome, "swamp")) or (not string.find(t_biome, "beach")) or (not string.find(t_biome, "highland"))
+							 or (not string.find(t_biome, "ocean")) or (not string.find(t_biome, "mountain")) or (not string.find(t_biome, "strato"))then
+							if mg_earth.eco_map[index2d] ~= "n0" then
+								if (t_biome and (t_biome ~= "")) and (t_eco and (t_eco ~= "")) then
+									if gal.ecosystems[t_biome] then
+										if gal.ecosystems[t_biome][t_eco] then
+											--minetest.log(t_biome .. ", " .. t_eco)
+											t_stone				= gal.ecosystems[t_biome][t_eco].stone
+											t_filler			= gal.ecosystems[t_biome][t_eco].fill
+											t_top				= gal.ecosystems[t_biome][t_eco].top
+											t_water				= mg_earth.biome_info[t_biome].b_water
+											t_river				= gal.ecosystems[t_biome][t_eco].river
+											t_riverbed_depth	= mg_earth.biome_info[t_biome].b_riverbed_depth
+										end
+									end
+								end
+							end
 						end
 					end
 				end
 
-				--t_filler = mg_earth.eco_fill[index2d]
-				--t_top = mg_earth.eco_top[index2d]
 
 				if mg_earth.cliffmap[index2d] > 0 then
 					t_filler = t_stone
 				end
 				
-				if mg_earth.heightmap[index2d] > (max_highland + mg_earth.hh_mod[index2d]) then
+				--if mg_earth.heightmap[index2d] > (max_highland + mg_earth.hh_mod[index2d]) then
+				if mg_earth.heightmap[index2d] > max_highland then
 					t_top = t_stone
 					t_filler = t_stone
 					t_stone = t_stone
@@ -2282,7 +2295,8 @@ minetest.register_on_generated(function(minp, maxp, seed)
 					t_river = t_ice
 				end
 				-- --if theight > ((max_mountain + h_mod) - (z / 100)) then
-				if mg_earth.heightmap[index2d] > (max_mountain + mg_earth.hh_mod[index2d]) then
+				--if mg_earth.heightmap[index2d] > (max_mountain + mg_earth.hh_mod[index2d]) then
+				if mg_earth.heightmap[index2d] > max_mountain then
 					t_top = t_ice
 					t_filler = t_stone
 					t_water = t_ice
