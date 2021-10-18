@@ -22,31 +22,67 @@ minetest.log("[MOD] mg_earth:  Legal Info: Copyright " .. mg_earth.copyright .. 
 minetest.log("[MOD] mg_earth:  License: " .. mg_earth.license .. "")
 
 
-local mg_points = dofile(mg_earth.path .. "/points.lua")
+--THE FOLLOWING SETTINGS CAN BE CHANGED
+minetest.set_mapgen_setting("seed", "16096304901732432682", true)
+--World Scale:  Supported values range from 0.01 to 1.0.  This scales the voronoi cells and noise values.
+local mg_world_scale			= 1
+--Sets the water level used by the mapgen.  This should / could use map_meta value, but that is less controllable.
+local mg_water_level			= 1 * mg_world_scale
+--This value is multiplied by 1.4 or added to max v7 noise height.  From this total, cell distance is then subtracted.
+local mg_base_height			= 300 * mg_world_scale
+--Sets the max height of beaches.
+local max_beach					= 4 * mg_world_scale
+--Sets the max height of highlands.  Also used as tree line.
+local max_highland				= 200 * mg_world_scale
+--Sets the max height of mountains.  Basically, the snow line.
+local max_mountain				= 300 * mg_world_scale
+--Enables use of gal provided ecosystems.  Disables ecosystems for all other biome related mods.
+local mg_ecosystems				= false
+
+--Enables voronoi rivers.  Valleys are naturally formed at the edges of voronoi cells in this mapgen.  This turns those edges into rivers.
+local mg_rivers_enabled			= false
+--Sets the max width of valley formation.  Needs work.
+local mg_valley_size			= 50 * mg_world_scale
+	--local mg_valley_size = 100 * mg_world_scale
+	--local mg_valley_size = 10
+--Sets the max width of rivers.  Also needs refining.
+local mg_river_size				= 20 * mg_world_scale
+	--local mg_river_size = 2
+--Enables cave generation.
+local mg_caves_enabled			= true
+--Allowed options: c, e, m, cm.		These stand for Chebyshev, Euclidean, Manhattan, and Chebyshev Manhattan.  The determine the type of voronoi
+--cell that is produces.  Chebyshev produces square cells.  Euclidean produces circular cells.  Manhattan produces diamond cells.
+local dist_metric				= "cm"
+--Determines percentage of base voronoi terrain, alt voronoi terrain, and noise terrain values that are then added together.
+local noise_blend				= 0.35
+--Sets whether to use true earth like heat distribution.  Hot equator, cold polar regions.
+local use_heat_scalar			= true
+--Sets whether to use rudimentary earthlike humidity distribution.  Some latitudes appear to carry more moisture than others.
+local use_humid_scalar			= true
+
+--The following allows the use of custom voronoi point sets.  All point sets must be a file that returns a specially formatted lua table.  The file
+--must exist in the point_sets folder within the mod.  Current sets are points_earth, (the default), and points_dev_isle
+--OPTIONS:		points_earth (default), points_dev_isle, points_dev_isle_02
+p_file = "points_earth"
+--The following is the name of a file that is created on shutdown of all voronoi cells and their respective neighboring cells.
+n_file = p_file .. "_neighbors"
+
+--DNU the following two lines.
+	--options:   bterrain, bterrainalt, flat, islands, islandsalt, v6, v7, v7alt, v7voronoi, v7altvoronoi, voronoi, v7voronoicliffs, v7altvoronoicliffs, voronoicliffs
+	--local mg_map = "v7altvoronoicliffs"
+
+--END CONFIG
+
+
+local mg_points = dofile(mg_earth.path .. "/point_sets/" .. p_file .. ".lua")
 local mg_neighbors = {}
 
 mg_earth.mg_points = mg_points
 
 --dofile(mg_earth.path .. "/voxel.lua")
 
-
-n_file = "mg_neighbors"
-
---options:   bterrain, bterrainalt, flat, islands, islandsalt, v6, v7, v7alt, v7voronoi, v7altvoronoi, voronoi, v7voronoicliffs, v7altvoronoicliffs, voronoicliffs
---local mg_map = "v7altvoronoicliffs"
-
---THE FOLLOWING SETTINGS CAN BE CHANGED
-
-local mg_world_scale			= 1
-local mg_water_level			= 1
-local mg_base_height			= 300 * mg_world_scale
-local max_beach					= 4 * mg_world_scale
-local max_highland				= 200 * mg_world_scale
-local max_mountain				= 300 * mg_world_scale
-local mg_ecosystems				= false
-
-mg_earth.default					= minetest.global_exists("default")
-mg_earth.gal						= minetest.global_exists("gal")
+mg_earth.default				= minetest.global_exists("default")
+mg_earth.gal					= minetest.global_exists("gal")
 
 if mg_earth.gal then
 	mg_world_scale				= gal.mapgen.mg_world_scale
@@ -57,21 +93,6 @@ if mg_earth.gal then
 	max_mountain				= gal.mapgen.maxheight_mountain
 	mg_ecosystems				= true
 end
-
-local mg_rivers_enabled			= false
---local mg_valley_size = 100 * mg_world_scale
-local mg_valley_size			= 50 * mg_world_scale
---local mg_valley_size = 10
-local mg_river_size				= 20 * mg_world_scale
---local mg_river_size = 2
-local mg_caves_enabled			= true
-local dist_metric				= "cm"
-local noise_blend				= 0.35
-local use_heat_scalar			= true
-local use_humid_scalar			= true
-
---END CONFIG
-
 
 
 local abs   = math.abs
@@ -312,82 +333,6 @@ local np_eco5 = {offset = 0, scale = 1, seed = 6940, spread = {x = 256, y = 256,
 local np_eco6 = {offset = 0, scale = 1, seed = 6674, spread = {x = 256, y = 256, z = 256}, octaves = 5, persist = 0.5, lacunarity = 4}
 local np_eco7 = {offset = 0, scale = 1, seed = 5423, spread = {x = 256, y = 256, z = 256}, octaves = 5, persist = 0.5, lacunarity = 4}
 local np_eco8 = {offset = 0, scale = 1, seed = 9264, spread = {x = 256, y = 256, z = 256}, octaves = 5, persist = 0.5, lacunarity = 4}
-
-local function get_dirt(z,x)
-
-	local n1 = minetest.get_perlin(np_eco1):get_2d({x=x,y=z})
-	local n2 = minetest.get_perlin(np_eco2):get_2d({x=x,y=z})
-	local n3 = minetest.get_perlin(np_eco3):get_2d({x=x,y=z})
-	local n4 = minetest.get_perlin(np_eco4):get_2d({x=x,y=z})
-	local n5 = minetest.get_perlin(np_eco5):get_2d({x=x,y=z})
-	local n6 = minetest.get_perlin(np_eco6):get_2d({x=x,y=z})
-	local n7 = minetest.get_perlin(np_eco7):get_2d({x=x,y=z})
-	local n8 = minetest.get_perlin(np_eco8):get_2d({x=x,y=z})
-
-	-- local dirt = mg_earth.c_dirt
-	-- local lawn = mg_earth.c_dirtgrass
-	local eco = "n0"
-	
-	local bmax = max(n1, n2, n3, n4, n5, n6, n7, n8)
-	if bmax > dirt_threshold then
-		if n1 == bmax then
-			if n1 > eco_threshold then
-				eco = "n9"
-			else
-				eco = "n1"
-			end
-		elseif n2 == bmax then
-			if n2 > eco_threshold then
-				eco = "n10"
-			else
-				eco = "n2"
-			end
-		elseif n3 == bmax then
-			if n3 > eco_threshold then
-				eco = "n11"
-			else
-				eco = "n3"
-			end
-		elseif n4 == bmax then
-			if n4 > eco_threshold then
-				eco = "n12"
-			else
-				eco = "n4"
-			end
-		elseif n5 == bmax then
-			if n5 > eco_threshold then
-				eco = "n13"
-			else
-				eco = "n5"
-			end
-		elseif n6 == bmax then
-			if n6 > eco_threshold then
-				eco = "n14"
-			else
-				eco = "n6"
-			end
-		elseif n7 == bmax then
-			if n7 > eco_threshold then
-				eco = "n15"
-			else
-				eco = "n7"
-			end
-		elseif n8 == bmax then
-			if n8 > eco_threshold then
-				eco = "n16"
-			else
-				eco = "n8"
-			end
-		end
-	end
-	if not eco or eco == "" then
-		eco = "n0"
-	end
-	
-	--return dirt, lawn
-	return eco
-
-end
 
 local np_2d = {
 	offset = mg_noise_offset,
@@ -1275,6 +1220,82 @@ local function update_biomes()
 	end
 end
 update_biomes()
+
+local function get_dirt(z,x)
+
+	local n1 = minetest.get_perlin(np_eco1):get_2d({x=x,y=z})
+	local n2 = minetest.get_perlin(np_eco2):get_2d({x=x,y=z})
+	local n3 = minetest.get_perlin(np_eco3):get_2d({x=x,y=z})
+	local n4 = minetest.get_perlin(np_eco4):get_2d({x=x,y=z})
+	local n5 = minetest.get_perlin(np_eco5):get_2d({x=x,y=z})
+	local n6 = minetest.get_perlin(np_eco6):get_2d({x=x,y=z})
+	local n7 = minetest.get_perlin(np_eco7):get_2d({x=x,y=z})
+	local n8 = minetest.get_perlin(np_eco8):get_2d({x=x,y=z})
+
+	-- local dirt = mg_earth.c_dirt
+	-- local lawn = mg_earth.c_dirtgrass
+	local eco = "n0"
+	
+	local bmax = max(n1, n2, n3, n4, n5, n6, n7, n8)
+	if bmax > dirt_threshold then
+		if n1 == bmax then
+			if n1 > eco_threshold then
+				eco = "n9"
+			else
+				eco = "n1"
+			end
+		elseif n2 == bmax then
+			if n2 > eco_threshold then
+				eco = "n10"
+			else
+				eco = "n2"
+			end
+		elseif n3 == bmax then
+			if n3 > eco_threshold then
+				eco = "n11"
+			else
+				eco = "n3"
+			end
+		elseif n4 == bmax then
+			if n4 > eco_threshold then
+				eco = "n12"
+			else
+				eco = "n4"
+			end
+		elseif n5 == bmax then
+			if n5 > eco_threshold then
+				eco = "n13"
+			else
+				eco = "n5"
+			end
+		elseif n6 == bmax then
+			if n6 > eco_threshold then
+				eco = "n14"
+			else
+				eco = "n6"
+			end
+		elseif n7 == bmax then
+			if n7 > eco_threshold then
+				eco = "n15"
+			else
+				eco = "n7"
+			end
+		elseif n8 == bmax then
+			if n8 > eco_threshold then
+				eco = "n16"
+			else
+				eco = "n8"
+			end
+		end
+	end
+	if not eco or eco == "" then
+		eco = "n0"
+	end
+	
+	--return dirt, lawn
+	return eco
+
+end
 
 
 local function calc_biome_from_noise(heat, humid, pos)
