@@ -22,8 +22,17 @@ minetest.log("[MOD] mg_earth:  Legal Info: Copyright " .. mg_earth.copyright .. 
 minetest.log("[MOD] mg_earth:  License: " .. mg_earth.license .. "")
 
 
---THE FOLLOWING SETTINGS CAN BE CHANGED
+
+if minetest.get_mapgen_setting("mg_name") ~= "singlenode" then
+	return
+end
 minetest.set_mapgen_setting("seed", "16096304901732432682", true)
+gal.mg_seed = minetest.get_mapgen_setting("seed")
+minetest.set_mapgen_setting("mg_flags", "nocaves, nodungeons, light, decorations, biomes, ores", true)
+
+
+--THE FOLLOWING SETTINGS CAN BE CHANGED
+
 --World Scale:  Supported values range from 0.01 to 1.0.  This scales the voronoi cells and noise values.
 local mg_world_scale			= 1
 --Sets the water level used by the mapgen.  This should / could use map_meta value, but that is less controllable.
