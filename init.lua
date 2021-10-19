@@ -27,29 +27,40 @@ if minetest.get_mapgen_setting("mg_name") ~= "singlenode" then
 	return
 end
 minetest.set_mapgen_setting("seed", "16096304901732432682", true)
-gal.mg_seed = minetest.get_mapgen_setting("seed")
+mg_earth.mg_seed = minetest.get_mapgen_setting("seed")
 minetest.set_mapgen_setting("mg_flags", "nocaves, nodungeons, light, decorations, biomes, ores", true)
 
+mg_earth.settings = {
+	mg_world_scale				= tonumber(minetest.settings:get("mg_earth.mg_world_scale")) or 1,
+	mg_base_height				= tonumber(minetest.settings:get("mg_earth.mg_base_height")) or 300,
+	enable_rivers				= minetest.settings:get("mg_earth.enable_rivers") == "true",
+	enable_caves				= minetest.settings:get("mg_earth.enable_caves") == "false",
+}
+
+mg_earth.default				= minetest.global_exists("default")
+mg_earth.gal					= minetest.global_exists("gal")
 
 --THE FOLLOWING SETTINGS CAN BE CHANGED
 
 --World Scale:  Supported values range from 0.01 to 1.0.  This scales the voronoi cells and noise values.
-local mg_world_scale			= 1
+local mg_world_scale			= mg_earth.settings.mg_world_scale
+--This value is multiplied by 1.4 or added to max v7 noise height.  From this total, cell distance is then subtracted.
+local mg_base_height			= mg_earth.settings.mg_base_height * mg_world_scale
+--Enables voronoi rivers.  Valleys are naturally formed at the edges of voronoi cells in this mapgen.  This turns those edges into rivers.
+local mg_rivers_enabled			= mg_earth.settings.enable_rivers
+--Enables cave generation.
+local mg_caves_enabled			= mg_earth.settings.enable_caves
+
+
 --Sets the water level used by the mapgen.  This should / could use map_meta value, but that is less controllable.
 local mg_water_level			= 1 * mg_world_scale
---This value is multiplied by 1.4 or added to max v7 noise height.  From this total, cell distance is then subtracted.
-local mg_base_height			= 300 * mg_world_scale
 --Sets the max height of beaches.
 local max_beach					= 4 * mg_world_scale
 --Sets the max height of highlands.  Also used as tree line.
 local max_highland				= 200 * mg_world_scale
 --Sets the max height of mountains.  Basically, the snow line.
 local max_mountain				= 300 * mg_world_scale
---Enables use of gal provided ecosystems.  Disables ecosystems for all other biome related mods.
-local mg_ecosystems				= false
 
---Enables voronoi rivers.  Valleys are naturally formed at the edges of voronoi cells in this mapgen.  This turns those edges into rivers.
-local mg_rivers_enabled			= false
 --Sets the max width of valley formation.  Needs work.
 local mg_valley_size			= 50 * mg_world_scale
 	--local mg_valley_size = 100 * mg_world_scale
@@ -57,8 +68,9 @@ local mg_valley_size			= 50 * mg_world_scale
 --Sets the max width of rivers.  Also needs refining.
 local mg_river_size				= 20 * mg_world_scale
 	--local mg_river_size = 2
---Enables cave generation.
-local mg_caves_enabled			= true
+	
+	
+	
 --Allowed options: c, e, m, cm.		These stand for Chebyshev, Euclidean, Manhattan, and Chebyshev Manhattan.  The determine the type of voronoi
 --cell that is produces.  Chebyshev produces square cells.  Euclidean produces circular cells.  Manhattan produces diamond cells.
 local dist_metric				= "cm"
@@ -68,6 +80,10 @@ local noise_blend				= 0.35
 local use_heat_scalar			= true
 --Sets whether to use rudimentary earthlike humidity distribution.  Some latitudes appear to carry more moisture than others.
 local use_humid_scalar			= true
+
+--Enables use of gal provided ecosystems.  Disables ecosystems for all other biome related mods.
+local mg_ecosystems				= false
+
 
 --The following allows the use of custom voronoi point sets.  All point sets must be a file that returns a specially formatted lua table.  The file
 --must exist in the point_sets folder within the mod.  Current sets are points_earth, (the default), and points_dev_isle
@@ -89,9 +105,6 @@ local mg_neighbors = {}
 mg_earth.mg_points = mg_points
 
 --dofile(mg_earth.path .. "/voxel.lua")
-
-mg_earth.default				= minetest.global_exists("default")
-mg_earth.gal					= minetest.global_exists("gal")
 
 if mg_earth.gal then
 	mg_world_scale				= gal.mapgen.mg_world_scale
