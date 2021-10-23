@@ -26,6 +26,7 @@ minetest.log("[MOD] mg_earth:  License: " .. mg_earth.license .. "")
 if minetest.get_mapgen_setting("mg_name") ~= "singlenode" then
 	return
 end
+
 minetest.set_mapgen_setting("seed", "16096304901732432682", true)
 mg_earth.mg_seed = minetest.get_mapgen_setting("seed")
 minetest.set_mapgen_setting("mg_flags", "nocaves, nodungeons, light, decorations, biomes, ores", true)
@@ -33,8 +34,8 @@ minetest.set_mapgen_setting("mg_flags", "nocaves, nodungeons, light, decorations
 mg_earth.settings = {
 	mg_world_scale				= tonumber(minetest.settings:get("mg_earth.mg_world_scale")) or 1,
 	mg_base_height				= tonumber(minetest.settings:get("mg_earth.mg_base_height")) or 300,
-	enable_rivers				= minetest.settings:get("mg_earth.enable_rivers") == "true",
-	enable_caves				= minetest.settings:get("mg_earth.enable_caves") == "false",
+	enable_rivers				= minetest.settings:get_bool("mg_earth.enable_rivers") or true,
+	enable_caves				= minetest.settings:get_bool("mg_earth.enable_caves") or true,
 }
 
 mg_earth.default				= minetest.global_exists("default")
@@ -47,6 +48,7 @@ local mg_world_scale			= mg_earth.settings.mg_world_scale
 --This value is multiplied by 1.4 or added to max v7 noise height.  From this total, cell distance is then subtracted.
 local mg_base_height			= mg_earth.settings.mg_base_height * mg_world_scale
 --Enables voronoi rivers.  Valleys are naturally formed at the edges of voronoi cells in this mapgen.  This turns those edges into rivers.
+--local mg_rivers_enabled			= mg_earth.settings.enable_rivers
 local mg_rivers_enabled			= mg_earth.settings.enable_rivers
 --Enables cave generation.
 local mg_caves_enabled			= mg_earth.settings.enable_caves
@@ -54,19 +56,28 @@ local mg_caves_enabled			= mg_earth.settings.enable_caves
 
 --Sets the water level used by the mapgen.  This should / could use map_meta value, but that is less controllable.
 local mg_water_level			= 1 * mg_world_scale
+
+local biome_vertical_range =  (gal.mapgen.mg_base_height / 6)
 --Sets the max height of beaches.
 local max_beach					= 4 * mg_world_scale
+local max_coastal = mg_water_level + biome_vertical_range
+local max_lowland = max_coastal + biome_vertical_range
+local max_shelf = max_lowland + biome_vertical_range
+local max_highland = max_shelf + biome_vertical_range
+local max_mountain = max_highland + biome_vertical_range
 --Sets the max height of highlands.  Also used as tree line.
-local max_highland				= 200 * mg_world_scale
+--local max_highland				= 200 * mg_world_scale
 --Sets the max height of mountains.  Basically, the snow line.
-local max_mountain				= 300 * mg_world_scale
+--local max_mountain				= 300 * mg_world_scale
 
 --Sets the max width of valley formation.  Needs work.
-local mg_valley_size			= 50 * mg_world_scale
+--local mg_valley_size			= 50 * mg_world_scale
+local mg_valley_size			= 10 * mg_world_scale
 	--local mg_valley_size = 100 * mg_world_scale
 	--local mg_valley_size = 10
 --Sets the max width of rivers.  Also needs refining.
-local mg_river_size				= 20 * mg_world_scale
+--local mg_river_size				= 20 * mg_world_scale
+local mg_river_size				= 5 * mg_world_scale
 	--local mg_river_size = 2
 	
 	
@@ -110,7 +121,13 @@ if mg_earth.gal then
 	mg_world_scale				= gal.mapgen.mg_world_scale
 	mg_water_level				= gal.mapgen.water_level
 	mg_base_height				= gal.mapgen.mg_base_height
+	biome_vertical_range		= (gal.mapgen.mg_base_height / 6)
 	max_beach					= gal.mapgen.maxheight_beach
+	max_coastal					= gal.mapgen.sea_level + gal.mapgen.biome_vertical_range
+	max_lowland					= gal.mapgen.maxheight_coastal + gal.mapgen.biome_vertical_range
+	max_shelf					= gal.mapgen.maxheight_lowland + gal.mapgen.biome_vertical_range
+	max_highland				= gal.mapgen.maxheight_shelf + gal.mapgen.biome_vertical_range
+	max_mountain				= gal.mapgen.maxheight_highland + gal.mapgen.biome_vertical_range
 	max_highland				= gal.mapgen.maxheight_highland
 	max_mountain				= gal.mapgen.maxheight_mountain
 	mg_ecosystems				= true
@@ -332,8 +349,6 @@ local mg_noise_humid_scale = 50
 -- local sand_threshold = 0.75
 -- local silt_threshold = 1
 -- local dirt_threshold = 0.5
-local eco_threshold = 1
-local dirt_threshold = 0.5
 
 --  : Black dirt noise						2D
 -- local np_black = {offset = 0, scale = 1, seed = 4767, spread = {x = 256, y = 256, z = 256}, octaves = 5, persist = 0.5, lacunarity = 4}
@@ -1243,22 +1258,56 @@ local function update_biomes()
 end
 update_biomes()
 
-local function get_dirt(z,x)
+local eco_threshold = 1
+local dirt_threshold = 0.5
 
-	local n1 = minetest.get_perlin(np_eco1):get_2d({x=x,y=z})
-	local n2 = minetest.get_perlin(np_eco2):get_2d({x=x,y=z})
-	local n3 = minetest.get_perlin(np_eco3):get_2d({x=x,y=z})
-	local n4 = minetest.get_perlin(np_eco4):get_2d({x=x,y=z})
-	local n5 = minetest.get_perlin(np_eco5):get_2d({x=x,y=z})
-	local n6 = minetest.get_perlin(np_eco6):get_2d({x=x,y=z})
-	local n7 = minetest.get_perlin(np_eco7):get_2d({x=x,y=z})
-	local n8 = minetest.get_perlin(np_eco8):get_2d({x=x,y=z})
+local function get_dirt(pos)
+
+	local n1 = minetest.get_perlin(np_eco1):get_2d({x=pos.x,y=pos.z})
+	local n2 = minetest.get_perlin(np_eco2):get_2d({x=pos.x,y=pos.z})
+	local n3 = minetest.get_perlin(np_eco3):get_2d({x=pos.x,y=pos.z})
+	local n4 = minetest.get_perlin(np_eco4):get_2d({x=pos.x,y=pos.z})
+	local n5 = minetest.get_perlin(np_eco5):get_2d({x=pos.x,y=pos.z})
+	local n6 = minetest.get_perlin(np_eco6):get_2d({x=pos.x,y=pos.z})
+	local n7 = minetest.get_perlin(np_eco7):get_2d({x=pos.x,y=pos.z})
+	local n8 = minetest.get_perlin(np_eco8):get_2d({x=pos.x,y=pos.z})
 
 	-- local dirt = mg_earth.c_dirt
 	-- local lawn = mg_earth.c_dirtgrass
 	local eco = "n0"
 	
 	local bmax = max(n1, n2, n3, n4, n5, n6, n7, n8)
+--[[
+		-- local bmax = max(n1, n2, n3, n4)
+		-- if bmax > dirt_threshold then
+			-- if n1 == bmax then
+				-- if n1 > eco_threshold then
+					-- eco = "n1"
+				-- else
+					-- eco = "n2"
+				-- end
+			-- elseif n2 == bmax then
+				-- if n2 > eco_threshold then
+					-- eco = "n3"
+				-- else
+					-- eco = "n4"
+				-- end
+			-- elseif n3 == bmax then
+				-- if n3 > eco_threshold then
+					-- eco = "n5"
+				-- else
+					-- eco = "n6"
+				-- end
+			-- elseif n4 == bmax then
+				-- if n4 > eco_threshold then
+					-- eco = "n7"
+				-- else
+					-- eco = "n8"
+				-- end
+			-- end
+		-- end
+--]]
+--
 	if bmax > dirt_threshold then
 		if n1 == bmax then
 			if n1 > eco_threshold then
@@ -1310,6 +1359,7 @@ local function get_dirt(z,x)
 			end
 		end
 	end
+--
 	if not eco or eco == "" then
 		eco = "n0"
 	end
@@ -1319,6 +1369,23 @@ local function get_dirt(z,x)
 
 end
 
+local function get_biome_altitude(y)
+
+	local alt = ""
+
+	if (y >= max_beach) and (y < max_coastal) then
+		alt = "coastal"
+	elseif (y >= max_coastal) and (y < max_lowland) then
+		alt = "lowland"
+	elseif (y >= max_lowland) and (y < max_shelf) then
+		alt = "shelf"
+	elseif (y >= max_shelf) and (y < max_highland) then
+		alt = "highland"
+	end
+
+	return alt
+
+end
 
 local function calc_biome_from_noise(heat, humid, pos)
 	local biome_closest = nil
@@ -2101,13 +2168,17 @@ minetest.register_on_generated(function(minp, maxp, seed)
 				if nhumid < 50 then
 					d_humid = (v6_noise * ((50 - nhumid) / 50))
 				end
-				v6_height = (d_height * 0.25) + (d_humid * 0.5)
+				v6_height = (d_height * 0.1) + (d_humid * 0.5)
 			end
 			
 			local nterrain = v7_height + v6_height
 
-			local vheight = (bterrain * 0.30) + ((((bterrain / bcontinental) * (mg_world_scale / 0.01)) * 0.30) * 0.35)
-			local vterrain = (((bterrain + nterrain) * 0.25) + (((bterrain / bcontinental) * (mg_world_scale / 0.01)) * 0.35) + ((nterrain * (bterrain / mg_base_height)) * 0.5) * 0.35)
+			local vheight = (bterrain * 0.25) + (((bterrain / bcontinental) * (mg_world_scale / 0.01)) * 0.25)
+			--local vterrain = (((bterrain + nterrain) * 0.25) + (((bterrain / bcontinental) * (mg_world_scale / 0.01)) * 0.35) + ((nterrain * (bterrain / mg_base_height)) * 0.5) * 0.35)
+			--local vterrain = (((nterrain * (bterrain / mg_base_height)) * 0.5) * 0.35)
+			--local vterrain = (((nterrain / bcontinental) * 0.5) * 0.35)
+			--local vterrain = (bterrain * 0.25) + (((bterrain / bcontinental) * (mg_world_scale / 0.01)) * 0.25) + (nterrain / bcontinental) * (mg_world_scale / 0.01)
+			local vterrain = (bterrain * 0.25) + (((bterrain / bcontinental) * (mg_world_scale / 0.01)) * 0.25) + ((nterrain / bcontinental) * (mg_world_scale / 0.01))
 
 			mg_earth.valleymap[index2d] = -31000
 			mg_earth.riverpath[index2d] = 0
@@ -2131,30 +2202,30 @@ minetest.register_on_generated(function(minp, maxp, seed)
 							-- t_sin = sin(n2pe_dist + (x * pe_dir.x) + (z * pe_dir.z))
 						-- end
 						
-						local v_sin = mg_valley_size + t_sin
-						--local r_height = (vheight * 0.8)
-						--local r_height = (vheight * 0.9)
-						local r_height = vheight
-						--if (pe_dist <= v_sin + max(0,(t_terrain - r_height))) and (pe_dist > v_sin + max(0,(t_terrain - r_height))) then
-						--elseif (pe_dist <= v_sin + max(0,(t_terrain - r_height))) and (pe_dist > v_sin) then
+						-- local v_sin = mg_valley_size + t_sin
+							-- --local r_height = (vheight * 0.8)
+							-- --local r_height = (vheight * 0.9)
+						-- local r_height = vheight
+							-- --if (pe_dist <= v_sin + max(0,(t_terrain - r_height))) and (pe_dist > v_sin + max(0,(t_terrain - r_height))) then
+							-- --elseif (pe_dist <= v_sin + max(0,(t_terrain - r_height))) and (pe_dist > v_sin) then
 							
-						if (pe_dist <= v_sin + max(0,(t_terrain - r_height))) and (pe_dist > v_sin) then
-							vterrain = min(r_height, t_terrain)
-						elseif (pe_dist <= v_sin) then
-							vterrain = min(r_height, t_terrain)
-						end
-					
-						-- local v_floor = ((mg_valley_size * mg_valley_size) * 0.5)
-						-- local v_lift = ((mg_valley_size * mg_valley_size) * 0.8)
-						-- local v_rise = (mg_valley_size * mg_valley_size)
-						
-						-- if (pe_dist <= v_rise) and (pe_dist > v_lift) then
-							-- vterrain = min((vheight + max(1,(t_terrain - vheight))), t_terrain)
-						-- elseif (pe_dist <= v_lift) and (pe_dist > v_floor) then
-							-- vterrain = min((vheight + max(0,(t_terrain - vheight))), t_terrain)
-						-- elseif (pe_dist <= v_floor) then
-							-- vterrain = min(vheight, t_terrain)
+						-- if (pe_dist <= v_sin + max(0,(t_terrain - r_height))) and (pe_dist > v_sin) then
+							-- vterrain = min(r_height, t_terrain)
+						-- elseif (pe_dist <= v_sin) then
+							-- vterrain = min(r_height, t_terrain)
 						-- end
+					
+						local v_floor = (mg_valley_size * mg_valley_size)
+						local v_lift = ((mg_valley_size * mg_valley_size) * 0.5)
+						local v_rise = ((mg_valley_size * mg_valley_size) * 0.8)
+						
+						if (pe_dist <= v_floor) and (pe_dist > v_lift) then
+							vterrain = min((vheight + max(1,(t_terrain - vheight))), t_terrain)
+						elseif (pe_dist <= v_lift) and (pe_dist > v_rise) then
+							vterrain = min((vheight + max(0,(t_terrain - vheight))), t_terrain)
+						elseif (pe_dist <= v_rise) then
+							vterrain = min(vheight, t_terrain)
+						end
 						
 						mg_earth.valleymap[index2d] = pe_dist
 						mg_earth.riverpath[index2d] = t_sin
@@ -2176,7 +2247,7 @@ minetest.register_on_generated(function(minp, maxp, seed)
 
 			--mg_earth.eco_fill[index2d], mg_earth.eco_top[index2d] = get_dirt(z,x)
 			--mg_earth.eco_map[index2d] = get_dirt(biome_name,z,x)
-			mg_earth.eco_map[index2d] = get_dirt(z,x)
+			mg_earth.eco_map[index2d] = get_dirt({x=x,y=t_y,z=z})
 
 			mg_earth.hh_mod[index2d] = 0
 
@@ -2303,20 +2374,35 @@ minetest.register_on_generated(function(minp, maxp, seed)
 
 				if mg_ecosystems then
 					if (mg_earth.heightmap[index2d] > max_beach) and (mg_earth.heightmap[index2d] < max_highland) then
-						if (not string.find(t_biome, "swamp")) or (not string.find(t_biome, "beach")) or (not string.find(t_biome, "highland"))
-							 or (not string.find(t_biome, "ocean")) or (not string.find(t_biome, "mountain")) or (not string.find(t_biome, "strato"))then
+						if (not string.find(t_biome, "ocean")) or (not string.find(t_biome, "beach")) or (not string.find(t_biome, "swamp"))
+							 or (not string.find(t_biome, "mountain")) or (not string.find(t_biome, "strato"))then
 							if mg_earth.eco_map[index2d] ~= "n0" then
 								if (t_biome and (t_biome ~= "")) and (t_eco and (t_eco ~= "")) then
 									if gal.ecosystems[t_biome] then
-										if gal.ecosystems[t_biome][t_eco] then
+										local t_alt = get_biome_altitude(y)
+										if gal.ecosystems[t_biome][t_alt .. "_" .. t_eco] then
 											--minetest.log(t_biome .. ", " .. t_eco)
-											t_stone				= gal.ecosystems[t_biome][t_eco].stone
-											t_filler			= gal.ecosystems[t_biome][t_eco].fill
-											t_top				= gal.ecosystems[t_biome][t_eco].top
+											t_stone				= gal.ecosystems[t_biome][t_alt .. "_" .. t_eco].stone
+											t_filler			= gal.ecosystems[t_biome][t_alt .. "_" .. t_eco].fill
+											t_top				= gal.ecosystems[t_biome][t_alt .. "_" .. t_eco].top
 											t_water				= mg_earth.biome_info[t_biome].b_water
-											t_river				= gal.ecosystems[t_biome][t_eco].river
+											t_river				= gal.ecosystems[t_biome][t_alt .. "_" .. t_eco].river
 											t_riverbed_depth	= mg_earth.biome_info[t_biome].b_riverbed_depth
 										end
+
+--[[										-- if gal.ecosystems[t_biome][t_alt] then
+												-- if gal.ecosystems[t_biome][t_alt][t_eco] then
+													-- --minetest.log(t_biome .. ", " .. t_eco)
+													-- t_stone				= gal.ecosystems[t_biome][t_alt][t_eco].stone
+													-- t_filler			= gal.ecosystems[t_biome][t_alt][t_eco].fill
+													-- t_top				= gal.ecosystems[t_biome][t_alt][t_eco].top
+													-- t_water				= mg_earth.biome_info[t_biome].b_water
+													-- t_river				= gal.ecosystems[t_biome][t_alt][t_eco].river
+													-- t_riverbed_depth	= mg_earth.biome_info[t_biome].b_riverbed_depth
+												-- end
+											-- end
+--]]
+
 									end
 								end
 							end
@@ -2444,7 +2530,7 @@ minetest.register_on_generated(function(minp, maxp, seed)
 	-- Print generation time of this mapchunk.
 	local chugent = math.ceil((os.clock() - t0) * 1000)
 	print(("[mg_earth] Generating from %s to %s"):format(minetest.pos_to_string(minp), minetest.pos_to_string(maxp)) .. "  :  " .. chugent .. " ms")
-	--print("[mg_earth] Mapchunk generation time " .. chugent .. " ms")
+	print("[mg_earth] Mapchunk generation time " .. chugent .. " ms")
 
 	table.insert(mapgen_times.noisemaps, 0)
 	table.insert(mapgen_times.preparation, t1 - t0)

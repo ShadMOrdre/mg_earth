@@ -1,4 +1,4 @@
-#gal settings
+#mg_earth settings
 
 #Defines the scale in which the world is generated.  Has the effect of making a map of size 300m x 300m to 30000m x 30000m.
 mg_earth.mg_world_scale (Sets the scale of the world map.  Valid values are from 0.01 to 1. Default is 1.) int 1 0.01 1
@@ -7,7 +7,7 @@ mg_earth.mg_world_scale (Sets the scale of the world map.  Valid values are from
 mg_earth.mg_base_height (Sets the maximum altitude in which to define biomes and ecosystems. Default is 300.) int 300 1 30000
 
 #If enabled, will use lib_shapes to register nodebox shaped nodes.  Use this for stairs, slabs, walls, doors, fences, and furniture.
-mg_earth.enable_rivers (Enable to register shaped nodes.  true / false) bool false
+mg_earth.enable_rivers (Enable to register shaped nodes.  true / false) bool true
 
 #If enabled, will register all required mgv6 mapgen aliases.  Will only register stone, water, river water for all other mapgens.
 mg_earth.enable_caves (Enable to register mapgen aliases.  true / false) bool true
