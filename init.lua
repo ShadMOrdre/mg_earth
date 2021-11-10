@@ -443,8 +443,8 @@ local mg_noise_lacunarity = 2.19
 -- mg_valleys2d.mg_noise_persist = 0.4
 -- mg_valleys2d.mg_noise_lacunarity = 2
 
---local mg_density = 128
-local mg_density = 54
+local mg_density = 128
+local mg_cave_density = 54
 
 
 local mg_cliff_noise_spread = 180 * mg_world_scale
