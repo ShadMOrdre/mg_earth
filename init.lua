@@ -30,14 +30,14 @@ end
 mg_earth.settings = {
 	mg_world_scale				= tonumber(minetest.settings:get("mg_earth.mg_world_scale")) or 1.0,
 	mg_base_height				= tonumber(minetest.settings:get("mg_earth.mg_base_height")) or 300,
+	sea_level					= tonumber(minetest.settings:get("mg_earth.sea_level")) or 1,
+	flat_height					= tonumber(minetest.settings:get("mg_earth.flat_height")) or 5,
+	river_width					= tonumber(minetest.settings:get("mg_earth.river_width")) or 5,
 	enable_rivers				= minetest.settings:get_bool("mg_earth.enable_rivers") or false,
 	enable_caves				= minetest.settings:get_bool("mg_earth.enable_caves") or false,
 	enable_lakes				= minetest.settings:get_bool("mg_earth.enable_lakes") or false,
 	heat_scalar					= minetest.settings:get_bool("mg_earth.enable_heat_scalar") or true,
 	humidity_scalar				= minetest.settings:get_bool("mg_earth.enable_humidity_scalar") or true,
-	flat_height					= tonumber(minetest.settings:get("mg_earth.flat_height")) or 5,
-	sea_level					= tonumber(minetest.settings:get("mg_earth.sea_level")) or 1,
-	river_width					= tonumber(minetest.settings:get("mg_earth.river_width")) or 5,
 	-- Options: 1-12.  Default = 1.  See table 'mg_heightmap_select_options' below for description.
 	-- 1 = vEarth, 2 = v6, 3 = v7, 4 = v67, 5 = vFlat, 6 = vIslands, 7 = vValleys, 8 = vVoronoi, 9 = vVoronoiPlus, 10 = vSpheres, 11 = vCubes, 12 = vDiamonds, 13 = v3D,
 	heightmap					= tonumber(minetest.settings:get("mg_earth.heightmap")) or 1,
@@ -69,7 +69,7 @@ mg_earth.settings = {
 	voronoi_neighbor_file_suf	= "neighbors",
 }
 
---THE FOLLOWING SETTINGS CAN BE CHANGED
+--THE FOLLOWING SETTINGS CAN BE CHANGED VIA THE MAIN MENU
 
 minetest.set_mapgen_setting("seed", mg_earth.settings.seed, true)
 minetest.set_mapgen_setting("mg_flags", "nocaves, nodungeons, light, decorations, biomes, ores", true)
@@ -82,28 +82,40 @@ if mg_world_scale < 0.01 then
 elseif mg_world_scale > 1 then
 	mg_world_scale = 1
 end
-if mg_world_scale ~= 1 then
-	mg_rivers_enabled			= false
-	mg_caves_enabled			= false
-	mg_lakes_enabled			= false
-end
-
 --This value is multiplied by 1.4 or added to max v7 noise height.  From this total, cell distance is then subtracted.
 local mg_base_height			= mg_earth.settings.mg_base_height * mg_world_scale
+
+--Sets the water level used by the mapgen.  This should / could use map_meta value, but that is less controllable.
+local mg_water_level			= mg_earth.settings.sea_level * mg_world_scale
+
+--Sets the height of the flat mapgen
+local mg_flat_height = mg_earth.settings.flat_height
+
+--Sets the max width of rivers.  Needs work.
+	--local mg_river_size				= 20 * mg_world_scale
+	--local mg_river_size = 2
+local mg_river_size				= mg_earth.settings.river_width * mg_world_scale
+
 --Enables voronoi rivers.  Valleys are naturally formed at the edges of voronoi cells in this mapgen.  This turns those edges into rivers.
 --local mg_rivers_enabled			= mg_earth.settings.enable_rivers
 local mg_rivers_enabled			= mg_earth.settings.enable_rivers
+
 --Enables cave generation.
 local mg_caves_enabled			= mg_earth.settings.enable_caves
 
+--Enables lake generation.
 local mg_lakes_enabled			= mg_earth.settings.enable_lakes
-local mg_3d_terrain_enabled		= false
 
+--Sets whether to use true earth like heat distribution.  Hot equator, cold polar regions.
+local use_heat_scalar			= mg_earth.settings.heat_scalar
+--Sets whether to use rudimentary earthlike humidity distribution.  Some latitudes appear to carry more moisture than others.
+local use_humid_scalar			= mg_earth.settings.humidity_scalar
 
+--Heightmap generation method options.
 --DNU the following two lines.
 	--options:   bterrain, bterrainalt, flat, islands, islandsalt, v6, v7, v7alt, v7voronoi, v7altvoronoi, voronoi, v7voronoicliffs, v7altvoronoicliffs, voronoicliffs
 	--local mg_map = "v7altvoronoicliffs"
---END CONFIG
+--END DNU
 local mg_heightmap_select_options = {
 	"vEarth",		--1
 	"v6",			--2
@@ -121,40 +133,6 @@ local mg_heightmap_select_options = {
 }
 local mg_heightmap_select = mg_heightmap_select_options[mg_earth.settings.heightmap]
 
-local mg_flat_height = mg_earth.settings.flat_height
-
---Sets the max width of rivers.  Needs work.
-	--local mg_river_size				= 20 * mg_world_scale
-	--local mg_river_size = 2
-local mg_river_size				= mg_earth.settings.river_width * mg_world_scale
-if mg_world_scale < 1.0 then
-	mg_river_size = 4
-	--if mg_world_scale <= 0.1 then
-	--	mg_river_size = 2
-	--end
-end
-
-if mg_heightmap_select == "vValleys" then
-	mg_river_size				= mg_earth.settings.river_width
-end
---Sets the max width of valley formation.  Also needs refining.
-	--local mg_valley_size			= 50 * mg_world_scale
-	--local mg_valley_size			= 10 * mg_world_scale
-local mg_valley_size			= mg_river_size * mg_river_size
-	--local mg_valley_size = 100 * mg_world_scale
-	--local mg_valley_size = 10
-local river_size_factor = mg_river_size / 100
-	
---if mg_3d_terrain_enabled then
-if mg_heightmap_select == "v3D" then
-
-	mg_rivers_enabled			= false
-	mg_caves_enabled			= false
-	mg_lakes_enabled			= false
-
-end
-	
-	
 --Allowed options: c, e, m, cm.		These stand for Chebyshev, Euclidean, Manhattan, and Chebyshev Manhattan.  They determine the type of voronoi
 --cell that is produces.  Chebyshev produces square cells.  Euclidean produces circular cells.  Manhattan produces diamond cells.
 local dist_metrics = {
@@ -164,51 +142,6 @@ local dist_metrics = {
 	"cm",
 }
 local dist_metric				= dist_metrics[mg_earth.settings.voronoi_distance]
---Determines percentage of base voronoi terrain, alt voronoi terrain, and noise terrain values that are then added together.
-local noise_blend				= 0.65
---Sets whether to use true earth like heat distribution.  Hot equator, cold polar regions.
-local use_heat_scalar			= mg_earth.settings.heat_scalar
---Sets whether to use rudimentary earthlike humidity distribution.  Some latitudes appear to carry more moisture than others.
-local use_humid_scalar			= mg_earth.settings.humidity_scalar
-
-
---####
---##
---##	END CUSTOMIZATION OPTIONS.  Settings below are should not be changed at risk of crashing.  Some are on the TODO list, some will not be exposed.
---##
---####
-
-
---Enables use of gal provided ecosystems.  Disables ecosystems for all other biome related mods.
-local mg_ecosystems				= false
-
-local mg_use_valleys_noise				= true
-local mg_noise_select_options = {
-	"v6",
-	"v67",
-	"v7",
-	"vIslands",
-	"vValleys",
-	"v3D",
-	"v67Valleys",
-}
-local mg_noise_select			= mg_noise_select_options[2]
-
---local mg_default				= true
-
-
---Sets the water level used by the mapgen.  This should / could use map_meta value, but that is less controllable.
-local mg_water_level			= mg_earth.settings.sea_level * mg_world_scale
-
-local biome_vertical_range =  mg_base_height / 6
---Sets the max height of beaches.
-local max_beach					= 4 * mg_world_scale
-local max_coastal				= mg_water_level + biome_vertical_range
-local max_lowland				= max_coastal + biome_vertical_range
-local max_shelf					= max_lowland + biome_vertical_range
-local max_highland				= max_shelf + biome_vertical_range
-local max_mountain				= max_highland + biome_vertical_range
-
 
 --The following allows the use of custom voronoi point sets.  All point sets must be a file that returns a specially formatted lua table.  The file
 --must exist in the point_sets folder within the mod.  Current sets are points_earth, (the default), and points_dev_isle
@@ -220,7 +153,7 @@ local voronoi_point_files = {
 	"points_grid",
 }
 p_file = voronoi_point_files[mg_earth.settings.voronoi_file]
---The following is the name of a file that is created on shutdown of all voronoi cells and their respective neighboring cells.
+--The following is the name of a file that is created on shutdown of all voronoi cells and their respective neighboring cells.  A unique file is created based on mg_world_scale.
 --n_file = p_file .. "_" .. mg_earth.settings.voronoi_neighbor_file_suf .. ""
 n_file = p_file .. "_" .. tostring(mg_world_scale) .. "_" .. mg_earth.settings.voronoi_neighbor_file_suf .. ""
 
@@ -229,6 +162,136 @@ local mg_points = dofile(mg_earth.path .. "/point_sets/" .. p_file .. ".lua")
 local mg_neighbors = {}
 
 mg_earth.mg_points = mg_points
+
+
+--The following section are possible additional user exposed settings.
+
+local mg_3d_terrain_enabled		= false
+
+--Noise heightmap additive options for vEarth mapgen.
+local mg_noise_select_options = {
+	"v6",
+	"v67",
+	"v7",
+	"vIslands",
+	"vValleys",
+	"v67Valleys",
+	"v3D",
+}
+local mg_noise_select			= mg_noise_select_options[6]
+
+--Determines percentage of base voronoi terrain, alt voronoi terrain, and noise terrain values that are then added together.
+local noise_blend				= 0.65
+--Determines density value used by 3D terrain generation
+local mg_density = 128
+--Determines density value used by 3D cave generation
+local mg_cave_density = 54
+
+-- -- Cave Parameters
+--local YMIN = -33000 -- Cave realm limits
+--local YMIN = -1024 -- Cave realm limits
+local YMIN = -31000 -- Cave realm limits
+--local YMAX = -256
+--local YMAX = 256
+--local YMAX = mg_base_height * 0.5
+--local YMAX = mg_base_height
+local YMAX = -64
+--local TCAVE = 0.6		-- Cave threshold: 1 = small rare caves,
+local mg_cave_thresh1 = 0.6			-- Cave threshold: 1 = small rare caves,
+--local mg_cave_thresh1 = 1.00			-- Cave threshold: 1 = small rare caves,
+--local TCAVE1 = 8.75
+--local TCAVE1 = 15
+local mg_cave_thresh2 = 0.75		-- 0.5 = 1/3rd ground volume, 0 = 1/2 ground volume.
+--local mg_cave_thresh2 = 2.00		-- 0.5 = 1/3rd ground volume, 0 = 1/2 ground volume.
+--local TCAVE2 = 10		-- 0.5 = 1/3rd ground volume, 0 = 1/2 ground volume.
+--local TCAVE2 = 20		-- 0.5 = 1/3rd ground volume, 0 = 1/2 ground volume.
+local BLEND = 128		-- Cave blend distance near YMIN, YMAX
+--local BLEND = mg_base_height * 0.25
+
+-- -- Stuff
+local yblmin = YMIN + BLEND * 1.5
+local yblmax = YMAX - BLEND * 1.5
+
+--####
+--##
+--##	END CUSTOMIZATION OPTIONS.
+--##
+--####
+
+
+
+--####
+--##
+--##	Settings below should not be changed at risk of crashing.
+--##
+--####
+
+if mg_world_scale ~= 1 then
+	mg_rivers_enabled			= false
+	mg_caves_enabled			= false
+	mg_lakes_enabled			= false
+end
+
+if mg_world_scale < 1.0 then
+	mg_river_size = 4
+	--if mg_world_scale <= 0.1 then
+	--	mg_river_size = 2
+	--end
+end
+
+if mg_heightmap_select == "vValleys" then
+	mg_river_size				= mg_earth.settings.river_width
+end
+--if mg_3d_terrain_enabled then
+if mg_heightmap_select == "v3D" then
+
+	mg_rivers_enabled			= false
+	mg_caves_enabled			= false
+	mg_lakes_enabled			= false
+
+end
+
+if mg_noise_select == "v3D" then
+
+	mg_rivers_enabled			= false
+	mg_caves_enabled			= false
+	mg_lakes_enabled			= false
+
+end	
+	
+--Enables use of gal provided ecosystems.  Disables ecosystems for all other biome related mods.
+local mg_ecosystems				= false
+
+--local mg_default				= true
+
+local v_cscale = 0.05
+local v_pscale = 0.1
+local v_mscale = 0.125
+
+local eco_threshold = 1
+local dirt_threshold = 0.5
+
+
+--Sets the max width of valley formation.  Also needs refining.
+	--local mg_valley_size			= 50 * mg_world_scale
+	--local mg_valley_size			= 10 * mg_world_scale
+local mg_valley_size			= mg_river_size * mg_river_size
+	--local mg_valley_size = 100 * mg_world_scale
+	--local mg_valley_size = 10
+local river_size_factor = mg_river_size / 100
+	
+local biome_vertical_range =  mg_base_height / 6
+
+--Sets altitude ranges.
+local ocean_depth				= mg_base_height * mg_world_scale
+local beach_depth				= -4 * mg_world_scale
+local max_beach					= 4 * mg_world_scale
+local max_coastal				= mg_water_level + biome_vertical_range
+local max_lowland				= max_coastal + biome_vertical_range
+local max_shelf					= max_lowland + biome_vertical_range
+local max_highland				= max_shelf + biome_vertical_range
+local max_mountain				= max_highland + biome_vertical_range
+
 
 --dofile(mg_earth.path .. "/voxel.lua")
 
@@ -341,31 +404,6 @@ if mg_earth.gal then
 end
 
 
--- -- Cave Parameters
---local YMIN = -33000 -- Cave realm limits
---local YMIN = -1024 -- Cave realm limits
-local YMIN = -31000 -- Cave realm limits
---local YMAX = -256
---local YMAX = 256
---local YMAX = mg_base_height * 0.5
---local YMAX = mg_base_height
-local YMAX = -64
---local TCAVE = 0.6		-- Cave threshold: 1 = small rare caves,
-local mg_cave_thresh1 = 0.6			-- Cave threshold: 1 = small rare caves,
---local mg_cave_thresh1 = 1.00			-- Cave threshold: 1 = small rare caves,
---local TCAVE1 = 8.75
---local TCAVE1 = 15
-local mg_cave_thresh2 = 0.75		-- 0.5 = 1/3rd ground volume, 0 = 1/2 ground volume.
---local mg_cave_thresh2 = 2.00		-- 0.5 = 1/3rd ground volume, 0 = 1/2 ground volume.
---local TCAVE2 = 10		-- 0.5 = 1/3rd ground volume, 0 = 1/2 ground volume.
---local TCAVE2 = 20		-- 0.5 = 1/3rd ground volume, 0 = 1/2 ground volume.
-local BLEND = 128		-- Cave blend distance near YMIN, YMAX
---local BLEND = mg_base_height * 0.25
-
--- -- Stuff
-local yblmin = YMIN + BLEND * 1.5
-local yblmax = YMAX - BLEND * 1.5
-
 mg_earth.heightmap = {}
 mg_earth.biomemap = {}
 mg_earth.biome_info = {}
@@ -442,9 +480,6 @@ local mg_noise_lacunarity = 2.19
 -- mg_valleys2d.mg_noise_octaves = 6
 -- mg_valleys2d.mg_noise_persist = 0.4
 -- mg_valleys2d.mg_noise_lacunarity = 2
-
-local mg_density = 128
-local mg_cave_density = 54
 
 
 local mg_cliff_noise_spread = 180 * mg_world_scale
@@ -798,10 +833,6 @@ local atan	= math.atan
 local atan2	= math.atan2
 local pi	= math.pi
 local rad	= math.rad
-
-local v_cscale = 0.05
-local v_pscale = 0.1
-local v_mscale = 0.125
 
 
 local cliffs_thresh = floor((np_2d.scale) * 0.5)
@@ -1350,10 +1381,7 @@ local function update_biomes()
 		end
 	end
 end
-update_biomes()
 
-local eco_threshold = 1
-local dirt_threshold = 0.5
 
 local function get_dirt(pos)
 
@@ -1709,15 +1737,18 @@ local function get_terrain_height_cliffs(theight,z,x)
 	return theight, t_cliff
 end
 
-local function get_3d_height(z,x)
+local function get_3d_height(z,y,x)
 
 	--local n_y = minetest.get_perlin(np_2d):get_2d({x=x,y=z})
-	local n_y = minetest.get_perlin(np_3dterrain):get_2d({x=x,y=z})
+	--local n_y = minetest.get_perlin(np_3dterrain):get_2d({x=x,y=z})
 
-	local n_f = minetest.get_perlin(np_3dterrain):get_3d({x = x, y = n_y, z = z})
+	--local n_f = minetest.get_perlin(np_3dterrain):get_3d({x = x, y = (n_y + y), z = z})
+	local n_f = minetest.get_perlin(np_3dterrain):get_3d({x = x, y = y, z = z})
 
-	local s_d = (1 - n_y) / (mg_density * mg_world_scale)
-	local n_t = n_f + s_d
+	--local s_d = (1 - n_y) / (mg_density * mg_world_scale)
+	local s_d = n_f - (n_y + y)
+	--local n_t = n_f + s_d
+	local n_t = n_f - s_d
 
 	return n_t
 	--return n_f * mg_density
@@ -1981,7 +2012,7 @@ local function get_mg_heightmap(ppos,nheat,nhumid, i2d)
 			elseif mg_noise_select == "v7" then
 				nheight = v7_height
 			elseif mg_noise_select == "vIslands" then
-				nheight, n_c = get_valleys_height(z,x)
+				nheight, n_c = get_terrain_height(z,x)
 			elseif mg_noise_select == "v67Valleys" then
 				mg_rivers_enabled = true
 				nheight = v7_height + v6_height + (get_valleys_height(ppos.z,ppos.x) * -1)
@@ -1989,13 +2020,56 @@ local function get_mg_heightmap(ppos,nheat,nhumid, i2d)
 				--mg_rivers_enabled = true
 				nheight = (get_valleys_height(ppos.z,ppos.x) * -1)
 			elseif mg_noise_select == "v3D" then
-				local t_y = r_y
-				local h_y = mg_earth.heightmap[i2d]
-				if h_y and h_y > -31000 then
-					nheight = h_y + t_y
-				else
-					nheight = t_y
+					-- local t_y = r_y + minetest.get_perlin(np_2d):get_2d({x=ppos.x,y=ppos.z})
+					-- local h_y = mg_earth.heightmap[i2d]
+					-- -- local h_y = get_3d_height(z,r_y,x)
+							-- -- -- if h_y and h_y > -31000 then
+								-- -- -- nheight = h_y + t_y
+							-- -- -- else
+								-- -- -- nheight = t_y
+							-- -- -- end
+					-- mg_voronoimap[i2d] = t_y
+					--if h_y then
+						-- if h_y > ocean_depth and h_y <then
+							--nheight = h_y + t_y
+							--nheight = h_y
+						-- end
+						-- -- if h_y < mg_water_level and h_y > ocean_depth then
+							-- -- nheight = h_y + t_y
+						-- -- else
+						-- -- end
+					-- -- else
+						-- -- nheight = t_y
+					--end
+
+				--local t_y = vheight + minetest.get_perlin(np_2d):get_2d({x=ppos.x,y=ppos.z})
+				local t_y = vheight + mg_earth.heightmap[i2d]
+				mg_voronoimap[i2d] = t_y
+				local n_f = 0
+
+				--if mg_world_scale == 1 then
+					--n_f = nbuf_3dterrain[z-minp.z+1][(n_y + y)-minp.y+1][x-minp.x+1]
+					--n_f = nbuf_3dterrain[z-minp.z+1][(n_y + y)-minp.y+1][x-minp.x+1]
+				--	n_f = nbuf_3dterrain[z-minp.z+1][t_y-minp.y+1][x-minp.x+1]
+				--else
+					--n_f = minetest.get_perlin(np_3dterrain):get_3d({x = x, y = (n_y + y), z = z})
+					n_f = minetest.get_perlin(np_3dterrain):get_3d({x = ppos.x, y = t_y, z = ppos.z})
+				--end
+
+				--local s_d = (1 - (n_y + y)) / (mg_density * mg_world_scale)
+				local s_d = (1 - t_y) / (mg_density * mg_world_scale)
+				local n_t = n_f + s_d
+
+				-- if get_3d_density(z,y,x) > 0 then
+				if n_t > 0 then
+					--mg_earth.heightmap[index2d] = (n_y + y)
+					--mg_earth.heightmap[index2d] = y
+
+					nheight = n_t + t_y
+
 				end
+
+				--nheight = get_3d_height(ppos.z,vheight,ppos.x)
 			end
 
 			local bterrain = 0
@@ -2055,7 +2129,12 @@ local function get_mg_heightmap(ppos,nheat,nhumid, i2d)
 			--local bterrain = nheight
 			--local bterrain = vheight + nheight
 
-			r_y, r_c = get_terrain_height_cliffs(bterrain,ppos.z,ppos.x)
+			if mg_noise_select == "v3D" then
+				r_y = nheight
+				r_c = 0
+			else
+				r_y, r_c = get_terrain_height_cliffs(bterrain,ppos.z,ppos.x)
+			end
 
 		end
 
@@ -2694,81 +2773,99 @@ minetest.register_on_generated(function(minp, maxp, seed)
 	}
 
 	mg_earth.chunk_points = {
-		{x=minp.x,						y=minp.y,							z=minp.z},
+		{x=minp.x,							y=minp.y,							z=minp.z},
 		{x=mg_earth.center_of_chunk.x,		y=minp.y,							z=minp.z},
-		{x=maxp.x,						y=minp.y,							z=minp.z},
-		{x=minp.x,						y=minp.y,							z=mg_earth.center_of_chunk.z},
+		{x=maxp.x,							y=minp.y,							z=minp.z},
+		{x=minp.x,							y=minp.y,							z=mg_earth.center_of_chunk.z},
 		{x=mg_earth.center_of_chunk.x,		y=minp.y,							z=mg_earth.center_of_chunk.z},
-		{x=maxp.x,						y=minp.y,							z=mg_earth.center_of_chunk.z},
-		{x=minp.x,						y=minp.y,							z=maxp.z},
+		{x=maxp.x,							y=minp.y,							z=mg_earth.center_of_chunk.z},
+		{x=minp.x,							y=minp.y,							z=maxp.z},
 		{x=mg_earth.center_of_chunk.x,		y=minp.y,							z=maxp.z},
-		{x=maxp.x,						y=minp.y,							z=maxp.z},
-		{x=minp.x,						y=mg_earth.center_of_chunk.y,			z=minp.z},
-		{x=mg_earth.center_of_chunk.x,		y=mg_earth.center_of_chunk.y,			z=minp.z},
-		{x=maxp.x,						y=mg_earth.center_of_chunk.y,			z=minp.z},
-		{x=minp.x,						y=mg_earth.center_of_chunk.y,			z=mg_earth.center_of_chunk.z},
-		{x=mg_earth.center_of_chunk.x,		y=mg_earth.center_of_chunk.y,			z=mg_earth.center_of_chunk.z},
-		{x=maxp.x,						y=mg_earth.center_of_chunk.y,			z=mg_earth.center_of_chunk.z},
-		{x=minp.x,						y=mg_earth.center_of_chunk.y,			z=maxp.z},
-		{x=mg_earth.center_of_chunk.x,		y=mg_earth.center_of_chunk.y,			z=maxp.z},
-		{x=maxp.x,						y=mg_earth.center_of_chunk.y,			z=maxp.z},
-		{x=minp.x,						y=maxp.y,							z=minp.z},
+		{x=maxp.x,							y=minp.y,							z=maxp.z},
+		{x=minp.x,							y=mg_earth.center_of_chunk.y,		z=minp.z},
+		{x=mg_earth.center_of_chunk.x,		y=mg_earth.center_of_chunk.y,		z=minp.z},
+		{x=maxp.x,							y=mg_earth.center_of_chunk.y,		z=minp.z},
+		{x=minp.x,							y=mg_earth.center_of_chunk.y,		z=mg_earth.center_of_chunk.z},
+		{x=mg_earth.center_of_chunk.x,		y=mg_earth.center_of_chunk.y,		z=mg_earth.center_of_chunk.z},
+		{x=maxp.x,							y=mg_earth.center_of_chunk.y,		z=mg_earth.center_of_chunk.z},
+		{x=minp.x,							y=mg_earth.center_of_chunk.y,		z=maxp.z},
+		{x=mg_earth.center_of_chunk.x,		y=mg_earth.center_of_chunk.y,		z=maxp.z},
+		{x=maxp.x,							y=mg_earth.center_of_chunk.y,		z=maxp.z},
+		{x=minp.x,							y=maxp.y,							z=minp.z},
 		{x=mg_earth.center_of_chunk.x,		y=maxp.y,							z=minp.z},
-		{x=maxp.x,						y=maxp.y,							z=minp.z},
-		{x=minp.x,						y=maxp.y,							z=mg_earth.center_of_chunk.z},
+		{x=maxp.x,							y=maxp.y,							z=minp.z},
+		{x=minp.x,							y=maxp.y,							z=mg_earth.center_of_chunk.z},
 		{x=mg_earth.center_of_chunk.x,		y=maxp.y,							z=mg_earth.center_of_chunk.z},
-		{x=maxp.x,						y=maxp.y,							z=mg_earth.center_of_chunk.z},
-		{x=minp.x,						y=maxp.y,							z=maxp.z},
+		{x=maxp.x,							y=maxp.y,							z=mg_earth.center_of_chunk.z},
+		{x=minp.x,							y=maxp.y,							z=maxp.z},
 		{x=mg_earth.center_of_chunk.x,		y=maxp.y,							z=maxp.z},
-		{x=maxp.x,						y=maxp.y,							z=maxp.z},
+		{x=maxp.x,							y=maxp.y,							z=maxp.z},
 	}
 
 
 	-- Mapgen preparation is now finished. Check the timer to know the elapsed time.
 	local t1 = os.clock()
 
-	if mg_heightmap_select == "v3D" or (mg_noise_select == "v3D") then
-		local index2d = 0
+	if mg_heightmap_select == "v3D" or mg_noise_select == "v3D" then
+	--if mg_heightmap_select == "v3D" then
+		--local nixyz = 1
+		--local index2d = 0
+		local index2d = 1
 		for z = minp.z, maxp.z do
 			for y = minp.y, maxp.y do
 				for x = minp.x, maxp.x do
 
-					index2d = (z - minp.z) * csize.x + (x - minp.x) + 1
+					--index2d = (z - minp.z) * csize.x + (x - minp.x) + 1
+
+					--local n_y = minetest.get_perlin(np_2d):get_2d({x=x,y=z})
 
 					local n_f = 0
 					
 					if mg_world_scale == 1 then
+						--n_f = nbuf_3dterrain[z-minp.z+1][(n_y + y)-minp.y+1][x-minp.x+1]
+						--n_f = nbuf_3dterrain[z-minp.z+1][(n_y + y)-minp.y+1][x-minp.x+1]
 						n_f = nbuf_3dterrain[z-minp.z+1][y-minp.y+1][x-minp.x+1]
 					else
+						--n_f = minetest.get_perlin(np_3dterrain):get_3d({x = x, y = (n_y + y), z = z})
 						n_f = minetest.get_perlin(np_3dterrain):get_3d({x = x, y = y, z = z})
 					end
 
+					--local s_d = (1 - (n_y + y)) / (mg_density * mg_world_scale)
 					local s_d = (1 - y) / (mg_density * mg_world_scale)
 					local n_t = n_f + s_d
 
 					-- if get_3d_density(z,y,x) > 0 then
 					if n_t > 0 then
+						--mg_earth.heightmap[index2d] = (n_y + y)
 						mg_earth.heightmap[index2d] = y
 					end
 					
+					--nixyz = nixyz + 1
+					index2d = index2d + 1
+
 				end
+				index2d = index2d - (maxp.x - minp.x + 1) --shift the 2D index back
 			end
+			index2d = index2d + (maxp.x - minp.x + 1) --shift the 2D index up a layer
 		end
 	end
 
-	local index2d = 0
+	--local index2d = 0
+	local index2d = 1
+
 	for z = minp.z, maxp.z do
 		--for y = minp.y, maxp.y do
 			for x = minp.x, maxp.x do
 
-				index2d = (z - minp.z) * csize.x + (x - minp.x) + 1
+				--index2d = (z - minp.z) * csize.x + (x - minp.x) + 1
 				
 				local nheat = get_heat_scalar(z) + nbuf_heatmap[z-minp.z+1][x-minp.x+1] + nbuf_heatblend[z-minp.z+1][x-minp.x+1]
 				local nhumid = get_humid_scalar(z) + nbuf_humiditymap[z-minp.z+1][x-minp.x+1] + nbuf_humidityblend[z-minp.z+1][x-minp.x+1]
 
 				local t_y, t_c = get_mg_heightmap({x=x,y=0,z=z},nheat,nhumid,index2d)
 
-				if mg_heightmap_select == "v3D" or (mg_noise_select == "v3D") then
+				if mg_heightmap_select == "v3D" or mg_noise_select == "v3D" then
+				--if mg_heightmap_select == "v3D" then
 					t_y = mg_earth.heightmap[index2d]
 					mg_earth.cliffmap[index2d] = t_c
 				else
@@ -2848,6 +2945,8 @@ minetest.register_on_generated(function(minp, maxp, seed)
 					end
 				end
 
+				index2d = index2d + 1
+
 			end
 		--end
 	end
@@ -2882,8 +2981,9 @@ minetest.register_on_generated(function(minp, maxp, seed)
 	print("Time elapsed: "..tostring( t3-t2 ));
 
 
-	local nixyz = 1
-	local index2d = 0
+	--local nixyz = 1
+	--local index2d = 0
+	local index2d = 1
 
 	for z = minp.z, maxp.z do
 		for y = minp.y, maxp.y do
@@ -2904,7 +3004,7 @@ minetest.register_on_generated(function(minp, maxp, seed)
 
 			for x = minp.x, maxp.x do
 
-				index2d = (z - minp.z) * csize.x + (x - minp.x) + 1   
+				--index2d = (z - minp.z) * csize.x + (x - minp.x) + 1   
 				local ivm = a:index(x, y, z)
 				
 				local t_biome = mg_earth.biomemap[index2d]
@@ -3095,7 +3195,8 @@ minetest.register_on_generated(function(minp, maxp, seed)
 								--end
 							end
 
-										-- local ncave1 = nbuf_cave1[nixyz]
+
+--[[									-- local ncave1 = nbuf_cave1[nixyz]
 										-- local ncave2 = nbuf_cave2[nixyz]
 
 										-- if (ncave1 > tcave1) then
@@ -3128,6 +3229,7 @@ minetest.register_on_generated(function(minp, maxp, seed)
 												-- -- -- end
 											-- -- -- end
 										-- -- end
+--]]
 						end
 					end
 
@@ -3188,19 +3290,31 @@ minetest.register_on_generated(function(minp, maxp, seed)
 					end
 				end
 
-				if mg_heightmap_select == "v3D" or (mg_noise_select == "v3D") or mg_3d_terrain_enabled == true then
+				--if mg_heightmap_select == "v3D" or mg_noise_select == "v3D" or mg_3d_terrain_enabled == true then
+				if mg_heightmap_select == "v3D" or mg_noise_select == "v3D" then
 
 					local n_f = 0
 					
 					if mg_world_scale == 1 then
-						n_f = nbuf_3dterrain[z-minp.z+1][y-minp.y+1][x-minp.x+1]
+						if mg_noise_select == "v3D" then
+							n_f = minetest.get_perlin(np_3dterrain):get_3d({x = x, y = mg_voronoimap[index2d], z = z})
+						else
+							n_f = nbuf_3dterrain[z-minp.z+1][y-minp.y+1][x-minp.x+1]
+						end
 					else
-						n_f = minetest.get_perlin(np_3dterrain):get_3d({x = x, y = y, z = z})
+						if mg_noise_select == "v3D" then
+							n_f = minetest.get_perlin(np_3dterrain):get_3d({x = x, y = mg_voronoimap[index2d], z = z})
+						else
+							n_f = minetest.get_perlin(np_3dterrain):get_3d({x = x, y = y, z = z})
+						end
 					end
 
 					local s_d = 0
+					
 					if mg_noise_select == "v3D" then
-						s_d = (1 - (y + mg_voronoimap[index2d])) / (mg_density * mg_world_scale)
+						--s_d = (1 - (y + mg_voronoimap[index2d])) / (mg_density * mg_world_scale)
+						--  TRY BELOW
+						s_d = (1 - mg_voronoimap[index2d]) / (mg_density + mg_voronoimap[index2d] * mg_world_scale)
 					else
 						s_d = (1 - y) / (mg_density * mg_world_scale)
 					end
@@ -3209,6 +3323,7 @@ minetest.register_on_generated(function(minp, maxp, seed)
 
 					if n_t <= 0 then
 					--if get_3d_density(z,y,x) <= 0 then
+						--if (mg_voronoimap[index2d] + y) <= mg_water_level then
 						if y <= mg_water_level then
 							t_node = t_water
 						else
@@ -3219,12 +3334,15 @@ minetest.register_on_generated(function(minp, maxp, seed)
 
 				data[ivm] = t_node
 
-				nixyz = nixyz + 1
+				--nixyz = nixyz + 1
+				index2d = index2d + 1
 
 				write = true
 
 			end
+			index2d = index2d - (maxp.x - minp.x + 1) --shift the 2D index back
 		end
+		index2d = index2d + (maxp.x - minp.x + 1) --shift the 2D index up a layer
 	end
 
 	local t4 = os.clock()
@@ -3277,63 +3395,67 @@ minetest.register_on_generated(function(minp, maxp, seed)
 end)
 
 
-	local function mean( t )
-		local sum = 0
-		local count= 0
-	
-		for k,v in pairs(t) do
-			if type(v) == 'number' then
-				sum = sum + v
-				count = count + 1
-			end
+local function mean( t )
+	local sum = 0
+	local count= 0
+
+	for k,v in pairs(t) do
+		if type(v) == 'number' then
+			sum = sum + v
+			count = count + 1
 		end
-	
-		return (sum / count)
 	end
 
-	minetest.register_on_shutdown(function()
+	return (sum / count)
+end
+
+minetest.register_on_shutdown(function()
 
 
-		save_neighbors(n_file)
-		
-		if #mapgen_times.make_chunk == 0 then
-			return
-		end
+	save_neighbors(n_file)
 	
-		local average, standard_dev
-		minetest.log("mg_earth lua Mapgen Times:")
-	
-		average = mean(mapgen_times.noisemaps)
-		minetest.log("  noisemaps: - - - - - - - - - - - - - - -  "..average)
-	
-		average = mean(mapgen_times.preparation)
-		minetest.log("  preparation: - - - - - - - - - - - - - -  "..average)
-	
-		average = mean(mapgen_times.loop2d)
-		minetest.log(" 2D Noise loops: - - - - - - - - - - - - - - - - -  "..average)
-	
-		average = mean(mapgen_times.loop3d)
-		minetest.log(" 3D Noise loops: - - - - - - - - - - - - - - - - -  "..average)
-	
-		average = mean(mapgen_times.mainloop)
-		minetest.log(" Main Render loops: - - - - - - - - - - - - - - - - -  "..average)
-	
-		average = mean(mapgen_times.setdata)
-		minetest.log("  writing: - - - - - - - - - - - - - - - -  "..average)
-	
-		average = mean(mapgen_times.liquid_lighting)
-		minetest.log("  liquid_lighting: - - - - - - - - - - - -  "..average)
-	
-		average = mean(mapgen_times.writing)
-		minetest.log("  writing: - - - - - - - - - - - - - - - -  "..average)
+	if #mapgen_times.make_chunk == 0 then
+		return
+	end
 
-		average = mean(mapgen_times.make_chunk)
-		minetest.log("  makeChunk: - - - - - - - - - - - - - - -  "..average)
-	
-	end)
+	local average, standard_dev
+	minetest.log("mg_earth lua Mapgen Times:")
+
+	average = mean(mapgen_times.noisemaps)
+	minetest.log("  noisemaps: - - - - - - - - - - - - - - -  "..average)
+
+	average = mean(mapgen_times.preparation)
+	minetest.log("  preparation: - - - - - - - - - - - - - -  "..average)
+
+	average = mean(mapgen_times.loop2d)
+	minetest.log(" 2D Noise loops: - - - - - - - - - - - - - - - - -  "..average)
+
+	average = mean(mapgen_times.loop3d)
+	minetest.log(" 3D Noise loops: - - - - - - - - - - - - - - - - -  "..average)
+
+	average = mean(mapgen_times.mainloop)
+	minetest.log(" Main Render loops: - - - - - - - - - - - - - - - - -  "..average)
+
+	average = mean(mapgen_times.setdata)
+	minetest.log("  writing: - - - - - - - - - - - - - - - -  "..average)
+
+	average = mean(mapgen_times.liquid_lighting)
+	minetest.log("  liquid_lighting: - - - - - - - - - - - -  "..average)
+
+	average = mean(mapgen_times.writing)
+	minetest.log("  writing: - - - - - - - - - - - - - - - -  "..average)
+
+	average = mean(mapgen_times.make_chunk)
+	minetest.log("  makeChunk: - - - - - - - - - - - - - - -  "..average)
+
+end)
 
 
+minetest.register_on_mods_loaded(function()
 
+	update_biomes()
+
+end)
 
 minetest.log("[MOD] mg_earth:  Successfully loaded.")
 
