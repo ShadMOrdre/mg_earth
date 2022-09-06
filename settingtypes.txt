@@ -12,6 +12,9 @@ mg_earth.enable_rivers (If enabled, will generate 'rivers' at voronoi cell edges
 #If enabled, will generate caves.  Cave generation is influenced by biome. Default is true.
 mg_earth.enable_caves (Enable to generate caves.  true / false) bool true
 
+#If enabled, will generate caverns.  Cavern generation is influenced by biome. Default is true.
+mg_earth.enable_caverns (Enable to generate large caverns.  true / false) bool true
+
 #If enabled, will generate lakes in depressions, (Sokomines Lakes mod).  (WIP-Lake generation is influenced by biome(TODO)). Default is false.
 mg_earth.enable_lakes (If enabled, will generate lakes in depressions.  WIP-TODO-Lake generation is influenced by biome  true / false) bool false
 
@@ -30,8 +33,8 @@ mg_earth.sea_level (Sets the height of the sea level, the y value at which water
 #Sets the width of river used in voronoi and valleys mapgens.  Default is 7.
 mg_earth.river_width (Sets the width of river used in voronoi and valleys mapgens.  Default is 7.) int 7 2 10
 
-#Selects from 13 options for terrain generation.  Includes vEarth, v6, v7, v67, vFlat, vIslands, vValleys, vVoronoi, vVoronoiPlus, vSpheres, vCubes, vDiamonds.  Default is 1.
-mg_earth.heightmap (Selects from vEarth, v6, v7, v67, vFlat, vIslands, vValleys, vVoronoi, vVoronoiPlus, vSpheres, vCubes, vDiamonds, v3D.  Default is 1.) int 1 1 13
+#Selects from 15 options for terrain generation.  Includes vEarth, v3D, v6, v67, v7, vIslands, vValleys, vFlat, vVoronoi, vVoronoiPlus, vSpheres, vCubes, vDiamonds, vPlanetoids, vVoronoiCell.  Default is 1.
+mg_earth.heightmap (Selects from vEarth, v3D, v6, v67, v7, vIslands, vValleys, vFlat, vVoronoi, vVoronoiPlus, vSpheres, vCubes, vDiamonds, vPlanetoids, vVoronoiCell.  Default is 1.) int 1 1 15
 
 #Selects how distance is measured.  Options are 1 = chebyshev, 2 = euclidean, 3 = manhattan, 4 = chebyshev plus manattan divided by 2.  Default is 4.
 mg_earth.voronoi_distance (Selects how distance is measured.  Options are 1 = chebyshev, 2 = euclidean, 3 = manhattan, 4 = chebyshev plus manattan divided by 2.  Default is 4.) int 4 1 4
@@ -63,5 +66,151 @@ mg_earth.voronoi_file (Custom Voronoi Point Sets lua table file name.  Options a
 
 #Custom selection of voronoi cell neighbors file.  This file is created and updated at runtime and save to the world folder on shutdown. Default is 'neighbors'.
 #mg_earth.voronoi_neighbor_file_suf (Custom Voronoi Point Sets lua table file name.) string "neighbors"
+
+#NOISE PARAMS
+#2D Base Noise.
+mg_earth.np_2d_base (Basic 2D noise) noise_params_2d -4, 25, (600, 600, 600), 5934, 7, 0.6, 2.15
+
+#2D Alt Noise.
+mg_earth.np_2d_alt (Alternate 2D noise) noise_params_2d -4, 25, (600, 600, 600), 5934, 7, 0.6, 2.15
+
+#2D Sine Noise.
+mg_earth.np_2d_sin (2d Sin noise) noise_params_2d 0, 1.2, (600, 600, 600), 5934, 7, 0.6, 2.15
+
+#River Jitter Noise.
+mg_earth.np_river_jitter (River Jitter noise) noise_params_2d 0, 50, (512, 512, 512), 513337, 7, 0.6, 2.11
+
+
+#v7 Alt Noise.
+mg_earth.np_v7_alt (v7 Alt noise) noise_params_2d -4, 25, (600, 600, 600), 5934, 7, 0.6, 2.19
+
+#v7 Base Noise.
+mg_earth.np_v7_base (v7 Base noise) noise_params_2d -4, 70, (600, 600, 600), 5934, 7, 0.6, 2.19
+
+#v7 Height Noise.
+mg_earth.np_v7_height (v7 Height Select noise) noise_params_2d 0.5, 1, (500, 500, 500), 4213, 7, 0.6, 2.19
+
+#v7 Persist Noise.
+mg_earth.np_v7_persist (v7 Persistance noise) noise_params_2d 0.6, 0.1, (2000, 2000, 2000), 539, 3, 0.6, 2.19
+
+
+#v6 Base Noise.
+mg_earth.np_v6_base (v6 Base noise) noise_params_2d -4, 20, (250, 250, 250), 82341, 5, 0.6, 2
+
+#v6 Higher Noise.
+mg_earth.np_v6_higher (v6 Higher noise) noise_params_2d 20, 16, (500, 500, 500), 85039, 5, 0.6, 2
+
+#v6 Steepness Noise.
+mg_earth.np_v6_steep (v6 Steepness noise) noise_params_2d 0.85, 0.5, (125, 125, 125),  -932, 5, 0.7, 2
+
+#v6 Height Select Noise.
+mg_earth.np_v6_height (v6 Height Select noise) noise_params_2d 0, 1, (250, 250, 250), 4213, 5, 0.69, 2
+
+
+#v5 Factor Noise.
+#mg_earth.np_v5_factor (v5 Factor noise) noise_params_2d 0, 1, (250, 250, 250), 920381, 3, 0.45, 2, flags = "eased"
+mg_earth.np_v5_factor (v5 Factor noise) noise_params_2d 0, 1, (250, 250, 250), 920381, 3, 0.45, 2
+
+#v5 Height Noise.
+#mg_earth.np_v5_height (v5 Height noise) noise_params_2d 0, 10, (250, 250, 250), 84174, 4, 0.5, 2, flags = "eased"
+mg_earth.np_v5_height (v5 Height noise) noise_params_2d 0, 10, (250, 250, 250), 84174, 4, 0.5, 2
+
+#v5 Ground Noise.
+#mg_earth.np_v5_ground (v5 Ground noise) noise_params_2d 0, 40, (80, 80, 80), 983240, 4, 0.55, 2, flags = "eased"
+mg_earth.np_v5_ground (v5 Ground noise) noise_params_2d 0, 40, (80, 80, 80), 983240, 4, 0.55, 2
+
+
+#vValleys Terrain Noise.
+mg_earth.np_val_terrain (vValleys Terrain noise) noise_params_2d -10, 50, (1024, 1024, 1024), 5934, 6, 0.4, 2
+
+#vValleys River Noise.
+mg_earth.np_val_river (vValleys River noise) noise_params_2d 0, 1, (256, 256, 256), -6050, 5, 0.6, 2
+
+#vValleys Depth Noise.
+mg_earth.np_val_depth (vValleys Depth noise) noise_params_2d 5, 4, (512, 512, 512), -1914, 1, 1, 2
+
+#vValleys Profile Noise.
+mg_earth.np_val_profile (vValleys Profile noise) noise_params_2d 0.6, 0.5, (512, 512, 512), 777, 1, 1, 2
+
+#vValleys Slope Noise.
+mg_earth.np_val_slope (vValleys Slope noise) noise_params_2d 0.5, 0.5, (128, 128, 128), 746, 1, 1, 2
+
+#vValleys Fill Noise.
+mg_earth.np_val_fill (vValleys Fill noise) noise_params_2d 0, 1, (256, 256, 256), 1993, 6, 0.8, 2
+
+
+#Carpathian Noises
+mg_earth.np_carp_base (vCarpathian Base noise) noise_params_2d 1, 1, (8192, 8192, 8192), 211, 6, 0.8, 0.5
+mg_earth.np_carp_filler_depth (vCarpathian Filler Depth noise) noise_params_2d 0, 1, (512, 512, 512), 261, 3, 0.7, 2
+mg_earth.np_carp_terrain_step (vCarpathian Terrain Step noise) noise_params_2d 1, 1, (1889, 1889, 1889), 4157, 5, 0.5, 2
+mg_earth.np_carp_terrain_hills (vCarpathian Terrain Hills noise) noise_params_2d 1, 1, (1301, 1301, 1301), 1692, 5, 0.5, 2
+mg_earth.np_carp_terrain_ridge (vCarpathian Terrain Ridge noise) noise_params_2d 1, 1, (1889, 1889, 1889), 3568, 5, 0.5, 2
+#mg_earth.np_carp_height1 (vCarpathian Height1 noise) noise_params_2d 0, 5, (251, 251, 251), 9613, 5, 0.5, 2, flags = "eased"
+#mg_earth.np_carp_height2 (vCarpathian Height2 noise) noise_params_2d 0, 5, (383, 383, 383), 1949, 5, 0.5, 2, flags = "eased"
+#mg_earth.np_carp_height3 (vCarpathian Height3 noise) noise_params_2d 0, 5, (509, 509, 509), 3211, 5, 0.5, 2, flags = "eased"
+#mg_earth.np_carp_height4 (vCarpathian Height4 noise) noise_params_2d 0, 5, (631, 631, 631), 1583, 5, 0.5, 2, flags = "eased"
+mg_earth.np_carp_height1 (vCarpathian Height1 noise) noise_params_2d 0, 5, (251, 251, 251), 9613, 5, 0.5, 2
+mg_earth.np_carp_height2 (vCarpathian Height2 noise) noise_params_2d 0, 5, (383, 383, 383), 1949, 5, 0.5, 2
+mg_earth.np_carp_height3 (vCarpathian Height3 noise) noise_params_2d 0, 5, (509, 509, 509), 3211, 5, 0.5, 2
+mg_earth.np_carp_height4 (vCarpathian Height4 noise) noise_params_2d 0, 5, (631, 631, 631), 1583, 5, 0.5, 2
+mg_earth.np_carp_hills (vCarpathian Hills noise) noise_params_2d 0, 3, (257, 257, 257), 6604, 6, 0.5, 2
+mg_earth.np_carp_mnt_step (vCarpathian Mnt Step noise) noise_params_2d 0, 8, (509, 509, 509), 2590, 6, 0.6, 2
+mg_earth.np_carp_mnt_ridge (vCarpathian Mnt Ridge noise) noise_params_2d 0, 12, (743, 743, 743), 5520, 6, 0.7, 2
+mg_earth.np_carp_mnt_var (vCarpathian Mnt Var noise) noise_params_3d 0, 1, (499, 499, 499), 2490, 5, 0.55, 2
+
+
+#v3D Noise.
+mg_earth.np_3dterrain (v3D noise) noise_params_3d 0, 1, (384, 192, 384), 5934, 5, 0.5, 2.11
+
+
+#Cliff Noise.
+mg_earth.np_cliffs (Cliff noise) noise_params_2d 0, 0.72, (180, 180, 180), 82735, 5, 0.5, 2.19
+
+
+#Fill Noise.
+mg_earth.np_fill (Fill noise) noise_params_2d 0, 1.2, (150, 150, 150), 261, 3, 0.7, 2
+
+
+#Cave1 Noise.
+mg_earth.np_cave1 (Cave1 noise) noise_params_3d 0, 12, (61, 61, 61), 52534, 3, 0.5, 2
+
+#Cave2 Noise.
+mg_earth.np_cave2 (Cave2 noise) noise_params_3d 0, 12, (67, 67, 67), 10325, 3, 0.5, 2
+
+#Cavern1 Noise.
+mg_earth.np_cavern1 (Cavern1 noise) noise_params_3d 0, 1, (192, 96, 192), 59033, 5, 0.5, 2
+
+#Cavern2 Noise.
+mg_earth.np_cavern2 (Cavern2 noise) noise_params_3d 0, 1, (768, 256, 768), 10325, 6, 0.63, 2
+
+#Wave Noise.
+mg_earth.np_wave (Wave noise) noise_params_3d 0, 1, (256, 256, 256), -400000000089, 3, 0.67, 2
+
+#Cave Biome Noise.
+mg_earth.np_cave_biome (Cave Biome noise) noise_params_2d 0, 1, (250, 250, 250), 9130, 3, 0.5, 2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
