@@ -73,7 +73,7 @@ mg_earth.settings = {
 	-- Options: 1-12.  Default = 1.  See table 'mg_heightmap_select_options' below for description.
 	-- 1 = vEarth, 2 = v3D, 3 = v6, 4 = v67, 5 = v7, 6 = vCarp, 7 = vIslands, 8 = vValleys, 9 = vFlat, 10 = vVoronoi,
 	-- 11 = vVoronoiPlus, 12 = vSpheres, 13 = vCubes, 14 = vDiamonds, 15 = vPlanetoids, 16 = vVoronoiCell, 17 = v3dNoise, 18 = v2dNoise, 19 = "vRand3D"
-	heightmap					= tonumber(minetest.settings:get("mg_earth.heightmap")) or 8,
+	heightmap					= tonumber(minetest.settings:get("mg_earth.heightmap")) or 7,
 	noisemap					= 19,
 	-- Options: 1-4.  Default = 4.  1 = chebyshev, 2 = euclidean, 3 = manhattan, 4 = (chebyshev + manthattan) / 2
 	voronoi_distance			= tonumber(minetest.settings:get("mg_earth.voronoi_distance")) or 3,
@@ -115,7 +115,7 @@ mg_earth.settings = {
 	--		Westeros			= "60511299203150728"
 	--		Tethys				= "14649545929652778322"
 	--		Anglaea				= "18092077199824008846"
-	seed						= minetest.settings:get("mg_earth.seed") or "12744930397153043766",
+	seed						= minetest.settings:get("mg_earth.seed") or "7986080089770239873",
 	--voronoi_file				= minetest.settings:get("mg_earth.voronoi_file") or "points_earth",
 	--voronoi_file				= "points_earth",					--		"points_dev_isle"
 	voronoi_file				= tonumber(minetest.settings:get("mg_earth.voronoi_file")) or 1,
@@ -136,7 +136,7 @@ mg_earth.settings = {
 	np_v7_base					= minetest.settings:get_np_group("mg_earth.np_v7_base") or {offset=-4,scale=70,spread={x=600,y=600,z=600},seed=5934,octaves=7,persist=0.6,lacunarity=2.05,},
 	-- np_v7_base					= minetest.settings:get_np_group("mg_earth.np_v7_base") or {offset=-4,scale=70,spread={x=1200,y=1200,z=1200},seed=5934,octaves=7,persist=0.6,lacunarity=2.05,},
 	-- np_v7_peak					= 														   {offset=-4,scale=196,spread={x=1200,y=1200,z=1200},seed=5934,octaves=7,persist=0.6,lacunarity=2,},
-	np_v7_peak					= 														   {offset=-4,scale=140,spread={x=600,y=600,z=600},seed=5934,octaves=7,persist=0.6,lacunarity=2.05,},
+	np_v7_peak					= 														   {offset=-4,scale=140,spread={x=1200,y=1200,z=1200},seed=5934,octaves=7,persist=0.6,lacunarity=2.05,},
 	np_v7_height				= minetest.settings:get_np_group("mg_earth.np_v7_height") or {offset=0.5,scale=1,spread={x=500,y=500,z=500},seed=4213,octaves=7,persist=0.6,lacunarity=2,},
 	-- np_v7_height				= minetest.settings:get_np_group("mg_earth.np_v7_height") or {offset=0.5,scale=1,spread={x=750,y=750,z=750},seed=4213,octaves=7,persist=0.6,lacunarity=2,},
 	np_v7_persist				= minetest.settings:get_np_group("mg_earth.np_v7_persist") or {offset=0.6,scale=0.1,spread={x=2000,y=2000,z=2000},seed=539,octaves=3,persist=0.6,lacunarity=2,},
@@ -2712,8 +2712,11 @@ local function update_biomes()
 			end
 
 			if desc.node_cave_liquid and desc.node_cave_liquid ~= "" then
-				-- mg_earth.biome_info[desc.name].b_cave_liquid = minetest.get_content_id(desc.node_cave_liquid[1]) or mg_earth.c_cave_liquid
-				mg_earth.biome_info[desc.name].b_cave_liquid = minetest.get_content_id(desc.node_cave_liquid) or mg_earth.c_cave_liquid
+				if type(desc.node_cave_liquid) == "table" then
+					mg_earth.biome_info[desc.name].b_cave_liquid = minetest.get_content_id(desc.node_cave_liquid[1]) or mg_earth.c_cave_liquid
+				elseif type(desc.node_cave_liquid) == "string" then
+					mg_earth.biome_info[desc.name].b_cave_liquid = minetest.get_content_id(desc.node_cave_liquid) or mg_earth.c_cave_liquid
+				end
 			end
 
 			if desc.node_dungeon and desc.node_dungeon ~= "" then
