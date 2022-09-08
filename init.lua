@@ -43,38 +43,38 @@ mg_earth.settings = {
 	enable_caves				= minetest.settings:get_bool("mg_earth.enable_caves") or false,
 	enable_caverns				= minetest.settings:get_bool("mg_earth.enable_caverns") or false,
 	enable_lakes				= minetest.settings:get_bool("mg_earth.enable_lakes") or false,
-	enable_boulders				= true,
-	enable_streets				= true,
-	street_width				= 1,
-	street_sin_amplitude		= 50,
-	street_sin_frequency		= 0.01,
-	street_grid_width			= 1000,
-	street_min_height			= 4,
-	street_max_height			= 150,	--40
-	street_terrain_min_height	= -2,
-	enable_roads				= true,
-	road_width					= 1,
-	road_sin_amplitude			= 50,
-	road_sin_frequency			= 0.0125,
-	road_grid_width				= 500,
-	road_min_height				= 4,
-	road_max_height				= 180,	--50
-	road_terrain_min_height		= -2,
-	enable_paths				= true,
-	path_width					= 2,
-	path_sin_amplitude			= 25,
-	path_sin_frequency			= 0.025,
-	path_grid_width				= 250,
-	path_min_height				= 4,
-	path_max_height				= 200,	--60
-	path_terrain_min_height		= -2,
+	enable_boulders				= minetest.settings:get_bool("mg_earth.enable_boulders") or true,
+	enable_streets				= minetest.settings:get_bool("mg_earth.enable_streets") or true,
+	street_width				= tonumber(minetest.settings:get("mg_earth.street_width")) or 1,
+	street_sin_amplitude		= tonumber(minetest.settings:get("mg_earth.street_sin_amplitude")) or 50,
+	street_sin_frequency		= tonumber(minetest.settings:get("mg_earth.street_sin_frequency")) or 0.01,
+	street_grid_width			= tonumber(minetest.settings:get("mg_earth.street_grid_width")) or 1000,
+	street_min_height			= tonumber(minetest.settings:get("mg_earth.street_min_height")) or 4,
+	street_max_height			= tonumber(minetest.settings:get("mg_earth.street_max_height")) or 150,	--40
+	street_terrain_min_height	= tonumber(minetest.settings:get("mg_earth.street_terrain_min_height")) or -2,
+	enable_roads				= minetest.settings:get_bool("mg_earth.enable_roads") or true,
+	road_width					= tonumber(minetest.settings:get("mg_earth.road_width")) or 1,
+	road_sin_amplitude			= tonumber(minetest.settings:get("mg_earth.road_sin_amplitude")) or 50,
+	road_sin_frequency			= tonumber(minetest.settings:get("mg_earth.road_sin_frequency")) or 0.0125,
+	road_grid_width				= tonumber(minetest.settings:get("mg_earth.road_grid_width")) or 500,
+	road_min_height				= tonumber(minetest.settings:get("mg_earth.road_min_height")) or 4,
+	road_max_height				= tonumber(minetest.settings:get("mg_earth.road_max_height")) or 180,	--50
+	road_terrain_min_height		= tonumber(minetest.settings:get("mg_earth.road_terrain_min_height")) or -2,
+	enable_paths				= minetest.settings:get_bool("mg_earth.enable_paths") or true,
+	path_width					= tonumber(minetest.settings:get("mg_earth.path_width")) or 2,
+	path_sin_amplitude			= tonumber(minetest.settings:get("mg_earth.path_sin_amplitude")) or 25,
+	path_sin_frequency			= tonumber(minetest.settings:get("mg_earth.path_sin_frequency")) or 0.025,
+	path_grid_width				= tonumber(minetest.settings:get("mg_earth.path_grid_width")) or 250,
+	path_min_height				= tonumber(minetest.settings:get("mg_earth.path_min_height")) or 4,
+	path_max_height				= tonumber(minetest.settings:get("mg_earth.path_max_height")) or 200,	--60
+	path_terrain_min_height		= tonumber(minetest.settings:get("mg_earth.path_terrain_min_height")) or -2,
 	heat_scalar					= minetest.settings:get_bool("mg_earth.enable_heat_scalar") or false,
 	humidity_scalar				= minetest.settings:get_bool("mg_earth.enable_humidity_scalar") or false,
 	-- Options: 1-12.  Default = 1.  See table 'mg_heightmap_select_options' below for description.
 	-- 1 = vEarth, 2 = v3D, 3 = v6, 4 = v67, 5 = v7, 6 = vCarp, 7 = vIslands, 8 = vValleys, 9 = vFlat, 10 = vVoronoi,
 	-- 11 = vVoronoiPlus, 12 = vSpheres, 13 = vCubes, 14 = vDiamonds, 15 = vPlanetoids, 16 = vVoronoiCell, 17 = v3dNoise, 18 = v2dNoise, 19 = "vRand3D"
-	heightmap					= tonumber(minetest.settings:get("mg_earth.heightmap")) or 7,
-	noisemap					= 19,
+	heightmap					= tonumber(minetest.settings:get("mg_earth.heightmap")) or 9,
+	noisemap					= tonumber(minetest.settings:get("mg_earth.noisemap")) or 19,
 	-- Options: 1-4.  Default = 4.  1 = chebyshev, 2 = euclidean, 3 = manhattan, 4 = (chebyshev + manthattan) / 2
 	voronoi_distance			= tonumber(minetest.settings:get("mg_earth.voronoi_distance")) or 3,
 	--manual seed options.		The named seeds below were used during dev, but were interesting enough to include.  The names were entered in the menu, and these resulted.
@@ -115,7 +115,7 @@ mg_earth.settings = {
 	--		Westeros			= "60511299203150728"
 	--		Tethys				= "14649545929652778322"
 	--		Anglaea				= "18092077199824008846"
-	seed						= minetest.settings:get("mg_earth.seed") or "7986080089770239873",
+	seed						= minetest.settings:get("mg_earth.seed") or "4866059420164947791",
 	--voronoi_file				= minetest.settings:get("mg_earth.voronoi_file") or "points_earth",
 	--voronoi_file				= "points_earth",					--		"points_dev_isle"
 	voronoi_file				= tonumber(minetest.settings:get("mg_earth.voronoi_file")) or 1,
@@ -398,6 +398,13 @@ local mg_noise_select						= mg_noise_select_options[mg_earth.settings.noisemap]
 -- local mg_enable_noise_vCarp				=  false
 -- local mg_enable_noise_vIslands			=  true
 -- local mg_enable_noise_vValleys			=  false
+
+mg_earth.boulder_form_types = {
+	"none",
+	"flat",
+	"boulder",
+	"hoodoo",
+}
 
 
 
@@ -1319,7 +1326,18 @@ mg_earth.noise["np_humid_blend"] = {
 -- Note that because there is 1 octave, changing 'persistence' has no effect.
 -- For wider lines, but also fewer less gaps in the lines change 'scale' towards -20000.0.
 -- For lines further apart, increase the scale of the entire pattern by increasing all components of 'spread'. This will make the lines wider so you will then need to tune 'scale'.
+--[[	Road Noises.  NOT USED
 mg_earth.noise["np_road"] = {
+	flags = "defaults, absvalue",
+	offset = 0,
+	scale = 31000,
+	spread = {x = 256, y = 256, z = 256},
+	seed = 8675309,
+	octaves = 1,
+	persist = 0.5,
+	lacunarity = 2,
+}
+mg_earth.noise["np_road_jitter"] = {
 	flags = "defaults, absvalue",
 	--lacunarity = 2,
 	offset = 0,
@@ -1331,6 +1349,9 @@ mg_earth.noise["np_road"] = {
 	persist = 0.6,
 	lacunarity = 2,
 }
+--]]
+
+--[[	Sin Wave Noise.  NOT USED
 -- local np_sin = {
 	-- flags = "defaults, absvalue",
 	-- --lacunarity = 2,
@@ -1342,6 +1363,7 @@ mg_earth.noise["np_road"] = {
 	-- persist = 0.5,
 	-- lacunarity = 2,
 -- }
+--]]
 
 mg_earth.noise["np_bridge_column"] = {
 	offset = 0,
@@ -1353,8 +1375,8 @@ mg_earth.noise["np_bridge_column"] = {
 }
 
 
-
---[[mg_earth.road_schem_3x3 = {
+--[[  Road Schematics.   NOT USED
+mg_earth.road_schem_3x3 = {
 	size = {x = 3, y = 6, z = 3},
 	data = {
 		{name = "default:cobble", param2 = 0, force_place = true, prob = 254}, {name = "default:cobble", param2 = 0, force_place = true, prob = 254}, {name = "default:cobble", param2 = 0, force_place = true, prob = 254},
@@ -1386,7 +1408,7 @@ mg_earth.noise["np_bridge_column"] = {
 		-- {ypos = 4,prob = 254},
 		-- {ypos = 5,prob = 254}
 	}
-}--]]
+}
 mg_earth.road_schem_3x1 = {
 	size = {x = 3, y = 7, z = 1},
 	data = {
@@ -1407,7 +1429,7 @@ mg_earth.road_schem_3x1 = {
 		-- {ypos = 5,prob = 254}
 	}
 }
-
+--]]
 
 -- Do files
 
@@ -1453,7 +1475,7 @@ mg_earth.c_meselamp     = minetest.get_content_id("default:meselamp")
 
 
 
-
+--Localized math functions for convenience and performance.
 local abs		= math.abs
 local max		= math.max
 local min		= math.min
@@ -1518,9 +1540,9 @@ local v2d_alt_rng = v2d_alt_max_height - v2d_alt_min_height
 -- local v3d_max_height = max_height(mg_earth.noise["np_3dterrain"])
 -- local v3d_rng = v3d_max_height - v3d_min_height
 
--- local heat_max		= max_height(mg_earth.noise["np_heat"])
+local heat_max		= max_height(mg_earth.noise["np_heat"])
 -- local humid_min		= min_height(mg_earth.noise["np_humid"])
--- local humid_max		= max_height(mg_earth.noise["np_humid"])
+local humid_max		= max_height(mg_earth.noise["np_humid"])
 -- local humid_rng		= humid_max - humid_min
 
 --##Metrics functions.  Distance, direction, slope.
@@ -5053,8 +5075,9 @@ local function make_boulder(pos,area,data,form,c_stone)
 	local psize = {}
 	local chunk_center_rand = {}
 	local dist_metric = ""
-	local chunk_idx = 5
+	local chunk_idx = 4
 	local h_x,h_y,h_z
+	local points_location_select = "faces"
 
 	if form == "boulder" then
 		psize = {
@@ -5063,15 +5086,16 @@ local function make_boulder(pos,area,data,form,c_stone)
 			z = 20,
 		}
 		dist_metric = "cm"
-		chunk_idx = 5
-		h_x = (psize.x / 2)
-		h_y = (psize.y / 2)
-		h_z = (psize.z / 2)
-		chunk_center_rand = {
-			x = h_x + math.random(-2,2),
-			y = h_y + math.random(-3,1),
-			z = h_z + math.random(-2,2),
-		}
+		chunk_idx = 4
+		points_location_select = "faces"
+		-- h_x = (psize.x / 2)
+		-- h_y = (psize.y / 2)
+		-- h_z = (psize.z / 2)
+		-- chunk_center_rand = {
+			-- x = h_x + math.random(-2,2),
+			-- y = h_y + math.random(-2,1),
+			-- z = h_z + math.random(-2,2),
+		-- }
 	elseif form == "flat" then
 		psize = {
 			x = 20,
@@ -5079,31 +5103,33 @@ local function make_boulder(pos,area,data,form,c_stone)
 			z = 20,
 		}
 		dist_metric = "m"
-		chunk_idx = 5
-		h_x = (psize.x / 2)
-		h_y = (psize.y / 2)
-		h_z = (psize.z / 2)
-		chunk_center_rand = {
-			x = h_x + math.random(-2,2),
-			y = h_y + math.random(-2,1),
-			z = h_z + math.random(-2,2),
-		}
+		chunk_idx = 4
+		points_location_select = "faces"
+		-- h_x = (psize.x / 2)
+		-- h_y = (psize.y / 2)
+		-- h_z = (psize.z / 2)
+		-- chunk_center_rand = {
+			-- x = h_x + math.random(-2,2),
+			-- y = h_y + math.random(-2,1),
+			-- z = h_z + math.random(-2,2),
+		-- }
 	elseif form == "hoodoo" then
 		psize = {
-			x = 15,
+			x = 10,
 			y = 30,
-			z = 15,
+			z = 10,
 		}
 		dist_metric = "m"
-		chunk_idx = 5
-		h_x = (psize.x / 2)
-		h_y = (psize.y / 2)
-		h_z = (psize.z / 2)
-		chunk_center_rand = {
-			x = h_x + math.random(-2,2),
-			y = h_y + math.random(-4,0),
-			z = h_z + math.random(-2,2),
-		}
+		chunk_idx = 4
+		points_location_select = "faces"
+		-- h_x = (psize.x / 2)
+		-- h_y = (psize.y / 2)
+		-- h_z = (psize.z / 2)
+		-- chunk_center_rand = {
+			-- x = h_x + math.random(-2,2),
+			-- y = h_y + math.random(-2,1),
+			-- z = h_z + math.random(-2,2),
+		-- }
 	else
 		psize = {
 			x = 10,
@@ -5111,34 +5137,90 @@ local function make_boulder(pos,area,data,form,c_stone)
 			z = 10,
 		}
 		dist_metric = "c"
-		chunk_idx = 5
-		h_x = (psize.x / 2)
-		h_y = (psize.y / 2)
-		h_z = (psize.z / 2)
-		chunk_center_rand = {
-			x = h_x + math.random(-2,2),
-			y = h_y + math.random(-2,0),
-			z = h_z + math.random(-2,2),
-		}
+		chunk_idx = 4
+		points_location_select = "faces"
+		-- h_x = (psize.x / 2)
+		-- h_y = (psize.y / 2)
+		-- h_z = (psize.z / 2)
+		-- chunk_center_rand = {
+			-- x = h_x + math.random(-2,2),
+			-- y = h_y + math.random(-2,1),
+			-- z = h_z + math.random(-2,2),
+		-- }
 	end
 
-	local chunk_points = {
-		--{x=1,						y=1,						z=1},
-		--{x=(psize.x),				y=1,						z=1},
-		{x=h_x,						y=h_y,						z=1},
-		{x=1,						y=(psize.y),				z=1},
-		{x=(psize.x),				y=(psize.y),				z=1},
-		--{x=h_x,					y=1,						z=h_z},
-		{x=1,						y=h_y,						z=h_z},
-		{x=(chunk_center_rand.x),	y=(chunk_center_rand.y),	z=(chunk_center_rand.z)},
-		{x=(psize.x),				y=h_y,						z=h_z},
-		{x=h_x,						y=(psize.y),				z=h_z},
-		--{x=1,						y=1,						z=(psize.z)},
-		--{x=(psize.x),				y=1,						z=(psize.z)},
-		{x=h_x,						y=h_y,						z=(psize.z)},
-		{x=1,						y=(psize.y),				z=(psize.z)},
-		{x=(psize.x),				y=(psize.y),				z=(psize.z)},
+	h_x = (psize.x / 2)
+	h_y = (psize.y / 2)
+	h_z = (psize.z / 2)
+	chunk_center_rand = {
+		x = h_x + math.random(-2,2),
+		y = h_y + math.random(-2,1),
+		z = h_z + math.random(-2,2),
 	}
+
+	-- local chunk_points = {
+		-- --{x=1,						y=1,						z=1},
+		-- --{x=psize.x,				y=1,						z=1},
+		-- {x=h_x,						y=h_y,						z=1},										--(5,5,1)		front center center
+		-- {x=1,						y=psize.y,					z=1},										--(1,10,1)		front left top corner
+		-- {x=psize.x,					y=psize.y,					z=1},										--(10,10,1)		front right top corner
+		-- --{x=h_x,					y=1,						z=h_z},
+		-- {x=1,						y=h_y,						z=h_z},										--(1,5,5)		left center center
+		-- {x=chunk_center_rand.x,		y=chunk_center_rand.y,		z=chunk_center_rand.z},						--(5,5,5)		center
+		-- {x=psize.x,					y=h_y,						z=h_z},										--(10,5,5)		right center center
+		-- {x=h_x,						y=psize.y,					z=h_z},										--(5,10,5)		center top center
+		-- --{x=1,						y=1,						z=psize.z},
+		-- --{x=psize.x,				y=1,						z=psize.z},
+		-- {x=h_x,						y=h_y,						z=psize.z},									--(5,5,10)		
+		-- {x=1,						y=psize.y,					z=psize.z},									--(1,10,10)		
+		-- {x=psize.x,					y=psize.y,					z=psize.z},									--(10,10,10)	
+	-- }
+
+	local point_locations = {
+		--FACES
+		faces = {
+			{x=h_x,						y=psize.y,					z=h_z},										--(5,10,5)		top face
+			{x=psize.x,					y=h_y,						z=h_z},										--(10,5,5)		right face
+			{x=h_x,						y=h_y,						z=psize.z},									--(1,5,10)		back face
+			{x=chunk_center_rand.x,		y=chunk_center_rand.y,		z=chunk_center_rand.z},						--(5,5,5)		center
+			-- {x=h_x,						y=1,						z=h_z},										--(5,1,5)		center	(bottom face)
+			{x=h_x,						y=h_y,						z=1},										--(5,5,1)		front face
+			{x=1,						y=h_y,						z=h_z},										--(1,5,5)		left face
+			{x=h_x,						y=1,						z=h_z},										--(5,1,5)		bottom face
+		},
+		--EDGES
+		edges = {
+			{x=h_x,						y=1,						z=1},										--(5,1,1)		front center bottom			--front bottom edge
+			{x=1,						y=h_y,						z=1},										--(1,5,1)		front left center			--front left edge
+			{x=psize.x,					y=h_y,						z=1},										--(10,5,1)		front right center			--front right edge
+			{x=h_x,						y=psize.y,					z=1},										--(5,10,1)		front center top			--front top edge
+			{x=1,						y=1,						z=h_z},										--(1,1,5)		center left bottom
+			{x=1,						y=psize.y,					z=h_z},										--(1,5,5)		center left top
+			{x=chunk_center_rand.x,		y=chunk_center_rand.y,		z=chunk_center_rand.z},						--(5,5,5)		center
+			-- {x=h_x,						y=1,						z=h_z},										--(5,1,5)		center	(bottom face)
+			{x=psize.x,					y=1,						z=h_z},										--(10,5,5)		center right bottom
+			{x=psize.x,					y=psize.y,					z=h_z},										--(5,10,5)		center right top
+			{x=h_x,						y=1,						z=psize.z},									--(5,5,10)		back center bottom
+			{x=1,						y=h_y,						z=psize.z},									--(5,5,10)		back left center
+			{x=psize.x,					y=h_y,						z=psize.z},									--(1,10,10)		back right center
+			{x=h_x,						y=psize.y,					z=psize.z},									--(10,10,10)	back center top
+		},
+		--CORNERS
+		corners = {
+			{x=1,						y=1,						z=1},										--(1,1,1)		left  bottom front
+			{x=psize.x,					y=1,						z=1},										--(10,1,1)		right bottom front
+			{x=1,						y=1,						z=psize.z},									--(1,1,10)		left  bottom back
+			{x=psize.x,					y=1,						z=psize.z},									--(10,1,10)		right bottom back
+			{x=chunk_center_rand.x,		y=chunk_center_rand.y,		z=chunk_center_rand.z},						--(5,5,5)		center
+			-- {x=h_x,						y=1,						z=h_z},										--(5,1,5)		center	(bottom face)
+			{x=1,						y=psize.y,					z=1},										--(1,10,1)		left  top front
+			{x=psize.x,					y=psize.y,					z=1},										--(10,10,1)		right top front
+			{x=1,						y=psize.y,					z=psize.z},									--(1,10,10)		left  top back
+			{x=psize.x,					y=psize.y,					z=psize.z},									--(10,10,10)	right top back
+		},
+	}
+
+	local chunk_points = point_locations[points_location_select]
 
 	for i_x = 1, psize.x do
 		for i_y = 1, psize.y do
@@ -7536,13 +7618,6 @@ local function generate_map(minp, maxp, seed)
 	local chunk_rand_x = (20 - math.random(40))
 	local chunk_rand_y = (20 - math.random(40))
 	
-	local boulder_form_types = {
-		"boulder",
-		"flat",
-		"hoodoo",
-		"none",
-	}
-
 	local index2d = 1
 	local index3d = 1
 
@@ -7591,6 +7666,8 @@ local function generate_map(minp, maxp, seed)
 				local t_height				= mg_earth.heightmap[index2d]
 				local t_biome				= mg_earth.biomemap[index2d]
 				local t_eco					= mg_earth.eco_map[index2d]
+				local t_heat				= mg_earth.biome_info[t_biome].b_heat
+				local t_humid				= mg_earth.biome_info[t_biome].b_humid
 				-- local t_river_map			= mg_earth.valleysrivermap[index2d] or (mg_earth.config.river_size_factor + 1)
 				-- local t_river_map			= mg_earth.valleysrivermap[index2d]
 				-- local t_river_map			= mg_earth.rivermap[index2d]
@@ -7906,8 +7983,22 @@ local function generate_map(minp, maxp, seed)
 											-- t_top = mg_earth.c_path
 										-- end
 								if mg_earth.config.mg_rivers_enabled then
-									if (mg_earth.rivermap[index2d] <= (mg_earth.riverpath[index2d]) + 1) then
-										t_top = t_air
+									if mg_heightmap_select == "vValleys" or mg_heightmap_select == "vValleys3D" then
+										local t_river_map = mg_earth.valleysrivermap[index2d]
+
+										mg_earth.config.river_size_factor = (mg_earth.config.mg_river_size - (mg_earth.heightmap[index2d] / (40 * mg_world_scale))) / 100
+
+										if t_river_map > mg_earth.config.river_size_factor then
+											t_top = t_air
+										end
+									elseif mg_heightmap_select == "vEarth" then
+										if (mg_earth.rivermap[index2d] <= (mg_earth.riverpath[index2d]) + 1) then
+											t_top = t_air
+										end
+									else
+										-- if (mg_earth.rivermap[index2d] <= (mg_earth.riverpath[index2d]) + 1) then
+											-- t_top = t_air
+										-- end
 									end
 								end
 							end
@@ -7964,17 +8055,41 @@ local function generate_map(minp, maxp, seed)
 
 				if mg_earth.config.mg_boulders then
 					if y == t_height then
-						if (data[bi] == t_top or data[bi] == t_filler or data[bi] == t_stone) and (data[bi] ~= t_water_top or data[bi] ~= t_water and data[bi] ~= t_air or data[bi] ~= t_ignore) then
-							-- local ch_dist_x = abs(mg_earth.center_of_chunk.x - x)
-							-- local ch_dist_z = abs(mg_earth.center_of_chunk.z - z)
-							-- if (y == t_height) and (((chunk_size_half / 2) > ch_dist_x) and ((chunk_size_half / 2) > ch_dist_z)) then
+						if (data[bi] == t_top or data[bi] == t_filler or data[bi] == t_stone) and (data[bi] ~= t_water_top or data[bi] ~= t_water) and (data[bi] ~= t_air or data[bi] ~= t_ignore) then
+						-- if (t_node == t_top or t_node == t_filler or t_node == t_stone) and (t_node ~= t_water_top or t_node ~= t_water or t_node ~= t_air or t_node ~= t_ignore) then
 							-- if (y == t_height) then
-								if math.random(100000) <= 1 then
-									-- local boulder_form = boulder_form_types[math.random(1,4)]
-									make_boulder({x=x,y=y,z=z},area,data,"flat",t_stone)
-									-- make_boulder({x=x,y=t_height,z=z},area,data,boulder_form,t_stone)
+								if math.random(5000) <= 1 then
+									if string.find(t_biome, "arid") then
+										local boulder_form = mg_earth.boulder_form_types[math.random(3,4)]
+										make_boulder({x=x,y=t_height,z=z},area,data,boulder_form,t_stone)
+										-- make_boulder({x=x,y=t_height,z=z},area,data,"hoodoo",t_stone)
+										-- make_boulder({x=x,y=y,z=z},area,data,"flat",t_stone)
+									elseif string.find(t_biome, "semi") then
+										local boulder_form = mg_earth.boulder_form_types[math.random(2,3)]
+										make_boulder({x=x,y=t_height,z=z},area,data,boulder_form,t_stone)
+									elseif t_height < mg_water_level then
+										local boulder_form = mg_earth.boulder_form_types[math.random(1,2)]
+										make_boulder({x=x,y=t_height,z=z},area,data,boulder_form,t_stone)
+									else
+										local boulder_form = mg_earth.boulder_form_types[math.random(1,3)]
+										make_boulder({x=x,y=t_height,z=z},area,data,boulder_form,t_stone)
+									end
 								end
 							-- end
+						end
+					end
+					if (y == mg_water_level) and (t_height < mg_water_level) then
+						if string.find(t_biome, "cold") or string.find(t_biome, "cool_humid") then
+							if (data[bi] == t_water_top or data[bi] == t_water or data[bi] == mg_earth.c_ice) and (data[bi] ~= t_top or data[bi] ~= t_filler or data[bi] ~= t_stone) and (data[bi] ~= t_air or data[bi] ~= t_ignore) then
+							-- if (t_node == t_water_top or t_node == t_water or t_node == mg_earth.c_ice) and (t_node ~= t_top or t_node ~= t_filler or t_node ~= t_stone or t_node ~= t_air or t_node ~= t_ignore) then
+								-- if math.random((10000 - (2000 * (t_heat / heat_max)))) <= 1 then
+								if math.random(5000) <= 1 then
+									local boulder_form = mg_earth.boulder_form_types[math.random(1,3)]
+									make_boulder({x=x,y=mg_water_level,z=z},area,data,boulder_form,mg_earth.c_ice)
+									-- make_boulder({x=x,y=mg_water_level,z=z},area,data,"flat",mg_earth.c_ice)
+									-- make_boulder({x=x,y=y,z=z},area,data,"flat",mg_earth.c_ice)
+								end
+							end
 						end
 					end
 				end

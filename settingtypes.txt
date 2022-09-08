@@ -1,10 +1,19 @@
 #mg_earth settings
 
 #Defines the scale in which the world is generated.  Has the effect of making a map of size 300m x 300m to 30000m x 30000m.
-mg_earth.mg_world_scale (Sets the scale of the world map.  Valid values are from 0.01 to 1. Default is 1.) float 1.0 0.01 1.0
+mg_earth.mg_world_scale (Sets the scale of the world map.  Valid values are from 0.01 to >= 1. Default is 1.) float 1.0 0.01 1.0
 
 #Sets the height used to define biomes and ecosystems.  Stretches terrain vertically.  Good values range from 240 to 420 with 300 as the default.
 mg_earth.mg_base_height (Sets the maximum altitude in which to define biomes and ecosystems. Default is 300.) int 300 240 420
+
+#Sets the height of the sea level, the y value at which water generates.  Default is 1.
+mg_earth.sea_level (Sets the height of the sea level, the y value at which water generates.  Default is 1.) int 1 -31000 31000
+
+#Sets the height used for Flat mapgen.  Default is 5.
+mg_earth.flat_height (Sets the height of the Flat mapgen. Default is 5.) int 5 -31000 31000
+
+#Sets the width of river used in voronoi and valleys mapgens.  Default is 7.
+mg_earth.river_width (Sets the width of river used in voronoi and valleys mapgens.  Default is 7.) int 7 2 10
 
 #If enabled, will generate 'rivers' at voronoi cell edges.  Default is false.
 mg_earth.enable_rivers (If enabled, will generate 'rivers' at voronoi cell edges on vEarth.  Overridden if using vValleys setting.  true / false) bool false
@@ -15,8 +24,83 @@ mg_earth.enable_caves (Enable to generate caves.  true / false) bool true
 #If enabled, will generate caverns.  Cavern generation is influenced by biome. Default is true.
 mg_earth.enable_caverns (Enable to generate large caverns.  true / false) bool true
 
-#If enabled, will generate lakes in depressions, (Sokomines Lakes mod).  (WIP-Lake generation is influenced by biome(TODO)). Default is false.
-mg_earth.enable_lakes (If enabled, will generate lakes in depressions.  WIP-TODO-Lake generation is influenced by biome  true / false) bool false
+#If enabled, will generate lakes in depressions, (Sokomines Lakes mod).  Default is false.
+mg_earth.enable_lakes (If enabled, will generate lakes in depressions.  true / false) bool false
+
+#If enabled, will generate random boulders on the terrain.  Default is true.
+mg_earth.enable_boulders (If enabled, will generate random boulders on the terrain.  true / false) bool true
+
+#If enabled, will generate modern streets along the terrain.  Default is true.
+mg_earth.enable_streets (If enabled, will generate modern streets along the terrain.  true / false) bool true
+
+#Sets the width of street.  Default is 1.
+mg_earth.street_width (Sets the width of street path used to draw street blocks.  Default is 1.) int 1 1 1
+
+#Sets the street_sin_amplitude.  Default is 50.
+mg_earth.street_sin_amplitude (Sets the amplitude of the sine wave.  Default is 50.) int 50 1 100
+
+#Sets the street_sin_frequency.  Default is 0.01.
+mg_earth.street_sin_frequency (Sets the frequency of the sine wave.  Default is 0.01.) float 0.01 0.0 1.0
+
+#Sets the street_grid_width.  Default is 1000.
+mg_earth.street_grid_width (Sets the width of street grid.  streets are drawn along the x/z axis at this interval.  Default is 1000.) int 1000 10 2500
+
+#Sets the street_min_height.  Default is 4.
+mg_earth.street_min_height (Sets the minimum height of street surface.  Default is 4.) int 4 1 50
+
+#Sets the street_max_height.  Default is 150.
+mg_earth.street_max_height (Sets the maximum height of street surface.  Default is 150.) int 150 1 250
+
+#Sets the street_terrain_min_height.  Default is -2.
+mg_earth.street_terrain_min_height (Sets the minimum terrain height over which to draw streets.  Default is -2.) int -2 -31000 31000
+
+#If enabled, will generate cobblestone roads, (based on paramats Pathsv7).  Default is true.
+mg_earth.enable_roads (If enabled, will generate cobblestone roads along the terrain.  true / false) bool true
+
+#Sets the width of road.  Default is 1.
+mg_earth.road_width (Sets the width of road path used to draw road blocks.  Default is 2.) int 2 1 10
+
+#Sets the road_sin_amplitude.  Default is 50.
+mg_earth.road_sin_amplitude (Sets the amplitude of the sine wave.  Default is 50.) int 50 1 100
+
+#Sets the road_sin_frequency.  Default is 0.0125.
+mg_earth.road_sin_frequency (Sets the frequency of the sine wave.  Default is 0.025.) float 0.025 0.0 1.0
+
+#Sets the road_grid_width.  Default is 500.
+mg_earth.road_grid_width (Sets the width of road grid.  roads are drawn along the x/z axis at this interval.  Default is 500.) int 500 10 2500
+
+#Sets the road_min_height.  Default is 4.
+mg_earth.road_min_height (Sets the minimum height of road surface.  Default is 4.) int 4 1 50
+
+#Sets the road_max_height.  Default is 180.
+mg_earth.road_max_height (Sets the maximum height of road surface.  Default is 180.) int 180 1 250
+
+#Sets the road_terrain_min_height.  Default is -2.
+mg_earth.road_terrain_min_height (Sets the minimum terrain height over which to draw roads.  Default is -2.) int -2 -31000 31000
+
+#If enabled, will generate paths along the terrain.  Default is true.
+mg_earth.enable_paths (If enabled, will generate paths along the terrain.  true / false) bool true
+
+#Sets the width of path.  Default is 2.
+mg_earth.path_width (Sets the width of path as drawn on the terrain.  Default is 2.) int 2 1 10
+
+#Sets the path_sin_amplitude.  Default is 25.
+mg_earth.path_sin_amplitude (Sets the amplitude of the sine wave.  Default is 25.) int 25 1 100
+
+#Sets the path_sin_frequency.  Default is 0.025.
+mg_earth.path_sin_frequency (Sets the frequency of the sine wave.  Default is 0.025.) float 0.025 0.0 1.0
+
+#Sets the path_grid_width.  Default is 250.
+mg_earth.path_grid_width (Sets the width of path grid.  Paths are drawn along the x/z axis at this interval.  Default is 250.) int 250 10 2500
+
+#Sets the path_min_height.  Default is 4.
+mg_earth.path_min_height (Sets the minimum height of path surface.  Default is 4.) int 4 1 50
+
+#Sets the path_max_height.  Default is 200.
+mg_earth.path_max_height (Sets the maximum height of path surface.  Default is 200.) int 200 1 250
+
+#Sets the path_terrain_min_height.  (Currently not used.)  Default is -2.
+mg_earth.path_terrain_min_height (Sets the minimum terrain height over which to draw paths.  (Currently not used.)  Default is -2.) int -2 -31000 31000
 
 #If enabled, will modify global heat values to mimic earth like temperatures, (hot at the equator, cold at the poles) with noise for minor variation.  Default is true.
 mg_earth.enable_heat_scalar (If enabled, will modify global heat values to mimic earth like temperatures, hot at the equator, cold at the poles with noise for minor variation.  true / false) bool true
@@ -24,17 +108,11 @@ mg_earth.enable_heat_scalar (If enabled, will modify global heat values to mimic
 #If enabled, will modify global humidity values to mimic earth like mean precipitation.  Latitude determines dry / wet, with noise to vary. Default is true.
 mg_earth.enable_humidity_scalar (If enabled, will modify global humidity values to mimic earth like mean precipitation.  Latitude determines dry / wet, with noise to vary.  true / false) bool true
 
-#Sets the height used for Flat mapgen.  Default is 5.
-mg_earth.flat_height (Sets the height of the Flat mapgen. Default is 5.) int 5 -31000 31000
-
-#Sets the height of the sea level, the y value at which water generates.  Default is 1.
-mg_earth.sea_level (Sets the height of the sea level, the y value at which water generates.  Default is 1.) int 1 -31000 31000
-
-#Sets the width of river used in voronoi and valleys mapgens.  Default is 7.
-mg_earth.river_width (Sets the width of river used in voronoi and valleys mapgens.  Default is 7.) int 7 2 10
-
 #Selects from 15 options for terrain generation.  Includes vEarth, v3D, v6, v67, v7, vIslands, vValleys, vFlat, vVoronoi, vVoronoiPlus, vSpheres, vCubes, vDiamonds, vPlanetoids, vVoronoiCell.  Default is 1.
-mg_earth.heightmap (Selects from vEarth, v3D, v6, v67, v7, vIslands, vValleys, vFlat, vVoronoi, vVoronoiPlus, vSpheres, vCubes, vDiamonds, vPlanetoids, vVoronoiCell.  Default is 1.) int 1 1 15
+mg_earth.heightmap (Selects from 27 options for terrain generation.  (See readme for details.)  Default is 1.) int 1 1 27
+
+#Selects from 19 options for vEarth noise generation.  Current options include 2dnoise, various configurations of v6, v7, vCarpathian, vIslands, vValleys, and development versions.  Default is 1.
+mg_earth.noisemap (Selects from 19 options for vEarth noise generation.  (See readme for details.)  Default is 1.) int 1 1 19
 
 #Selects how distance is measured.  Options are 1 = chebyshev, 2 = euclidean, 3 = manhattan, 4 = chebyshev plus manattan divided by 2.  Default is 4.
 mg_earth.voronoi_distance (Selects how distance is measured.  Options are 1 = chebyshev, 2 = euclidean, 3 = manhattan, 4 = chebyshev plus manattan divided by 2.  Default is 4.) int 4 1 4
