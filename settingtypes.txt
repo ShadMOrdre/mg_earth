@@ -4,118 +4,223 @@
 mg_earth.mg_world_scale (Sets the scale of the world map.  Valid values are from 0.01 to >= 1. Default is 1.) float 1.0 0.01 1.0
 
 #Sets the height used to define biomes and ecosystems.  Stretches terrain vertically.  Good values range from 240 to 420 with 300 as the default.
-mg_earth.mg_base_height (Sets the maximum altitude in which to define biomes and ecosystems. Default is 300.) int 300 240 420
+mg_earth.settings.mg_base_height (Sets the maximum altitude in which to define biomes and ecosystems. Default is 300.) int 300 240 420
 
 #Sets the height of the sea level, the y value at which water generates.  Default is 1.
-mg_earth.sea_level (Sets the height of the sea level, the y value at which water generates.  Default is 1.) int 1 -31000 31000
+mg_earth.settings.sea_level (Sets the height of the sea level, the y value at which water generates.  Default is 1.) int 1 -31000 31000
 
 #Sets the height used for Flat mapgen.  Default is 5.
-mg_earth.flat_height (Sets the height of the Flat mapgen. Default is 5.) int 5 -31000 31000
-
-#Sets the width of river used in voronoi and valleys mapgens.  Default is 7.
-mg_earth.river_width (Sets the width of river used in voronoi and valleys mapgens.  Default is 7.) int 7 2 10
+mg_earth.settings.flat_height (Sets the height of the Flat mapgen. Default is 5.) int 5 -31000 31000
 
 #If enabled, will generate 'rivers' at voronoi cell edges.  Default is false.
-mg_earth.enable_rivers (If enabled, will generate 'rivers' at voronoi cell edges on vEarth.  Overridden if using vValleys setting.  true / false) bool false
+mg_earth.settings.rivers.enable (If enabled, will generate 'rivers' at voronoi cell edges on vEarth.  Overridden if using vValleys setting.  true / false) bool false
+
+#Sets the width of river used in voronoi and valleys mapgens.  Default is 20.
+mg_earth.settings.rivers.width (Sets the width of river used in voronoi and valleys mapgens.  Default is 20.) int 20 2 40
 
 #If enabled, will generate caves.  Cave generation is influenced by biome. Default is true.
-mg_earth.enable_caves (Enable to generate caves.  true / false) bool true
+mg_earth.settings.caves.enable (Enable to generate caves.  true / false) bool true
+
+#Sets the width of the cave.  This is how much of current chunk is cave. Default is 0.08.
+mg_earth.settings.caves.width (Enable to generate caves.  Default is 0.08.) float 0.08 0.01 1.0
+
+#Sets the threshhold at which caves appear.  Default is 1.0.
+mg_earth.settings.caves.thresh (Enable to generate caves.  Default is 1.0.) float 1.0 0.0 1.0
 
 #If enabled, will generate caverns.  Cavern generation is influenced by biome. Default is true.
-mg_earth.enable_caverns (Enable to generate large caverns.  true / false) bool true
+mg_earth.settings.caverns.enable (Enable to generate large caverns.  true / false) bool true
+
+#Cave threshold 1: 1 = small rare caves, 0.5 = 1/3rd ground volume, 0 = 1/2 ground volume. Default is 0.9.
+mg_earth.settings.caverns.thresh1 (Enable to generate large caverns.  Default is 0.9.) float 0.9 0.0 1.0
+
+#Cave threshold 2: 1 = small rare caves, 0.5 = 1/3rd ground volume, 0 = 1/2 ground volume. Default is 0.6.
+mg_earth.settings.caverns.thresh2 (Enable to generate large caverns.  Default is 0.6.) float 0.6 0.0 1.0
+
+#Cavern minimum height limit.  Default is -31000.
+mg_earth.settings.caverns.YMIN (Enable to generate large caverns.  Default is -31000.) int -31000 -31000 31000
+
+#Cavern 1 maximum height limit.  Default is -64.
+mg_earth.settings.caverns.YMAX1 (Enable to generate large caverns.  Default is -64.) int -64 -31000 31000
+
+#Cavern 2 maximum height limit.  Default is -64.
+mg_earth.settings.caverns.YMAX2 (Enable to generate large caverns.  Default is -64.) int -64 -31000 31000
+
+#Cavern blend limit.  Default is 128.
+mg_earth.settings.caverns.BLEND (Enable to generate large caverns.  Default is 128.) int 128 96 160
 
 #If enabled, will generate lakes in depressions, (Sokomines Lakes mod).  Default is false.
-mg_earth.enable_lakes (If enabled, will generate lakes in depressions.  true / false) bool false
+mg_earth.settings.enable_lakes (If enabled, will generate lakes in depressions.  true / false) bool false
 
 #If enabled, will generate random boulders on the terrain.  Default is true.
-mg_earth.enable_boulders (If enabled, will generate random boulders on the terrain.  true / false) bool true
+mg_earth.settings.enable_boulders (If enabled, will generate random boulders on the terrain.  true / false) bool true
 
 #If enabled, will generate modern streets along the terrain.  Default is true.
-mg_earth.enable_streets (If enabled, will generate modern streets along the terrain.  true / false) bool true
+mg_earth.settings.streets.enable (If enabled, will generate modern streets along the terrain.  true / false) bool true
 
 #Sets the width of street.  Default is 1.
-mg_earth.street_width (Sets the width of street path used to draw street blocks.  Default is 1.) int 1 1 1
+mg_earth.settings.streets.width (Sets the width of street path used to draw street blocks.  Default is 1.) int 1 1 1
+
+#Sets the path_additive of street.  Default is 1.
+mg_earth.settings.streets.path_additive (Chooses type of random curvature of street path.  Default is 1.) int 1 1 1
 
 #Sets the street_sin_amplitude.  Default is 50.
-mg_earth.street_sin_amplitude (Sets the amplitude of the sine wave.  Default is 50.) int 50 1 100
+mg_earth.settings.streets.sin_amplitude (Sets the amplitude of the sine wave.  Default is 50.) int 50 0 100
 
 #Sets the street_sin_frequency.  Default is 0.01.
-mg_earth.street_sin_frequency (Sets the frequency of the sine wave.  Default is 0.01.) float 0.01 0.0 1.0
+mg_earth.settings.streets.sin_frequency (Sets the frequency of the sine wave.  Default is 0.01.) float 0.01 0.0 1.0
 
 #Sets the street_grid_width.  Default is 1000.
-mg_earth.street_grid_width (Sets the width of street grid.  streets are drawn along the x/z axis at this interval.  Default is 1000.) int 1000 10 2500
+mg_earth.settings.streets.grid_width (Sets the width of street grid.  streets are drawn along the x/z axis at this interval.  Default is 1000.) int 1000 0 4000
 
 #Sets the street_min_height.  Default is 4.
-mg_earth.street_min_height (Sets the minimum height of street surface.  Default is 4.) int 4 1 50
+mg_earth.settings.streets.min_height (Sets the minimum height of street surface.  Default is 4.) int 4 1 10
 
-#Sets the street_max_height.  Default is 150.
-mg_earth.street_max_height (Sets the maximum height of street surface.  Default is 150.) int 150 1 250
+#Sets the street_max_height.  Default is 30.
+mg_earth.settings.streets.max_height (Sets the maximum height of street surface.  Default is 30.) int 30 11 300
 
 #Sets the street_terrain_min_height.  Default is -2.
-mg_earth.street_terrain_min_height (Sets the minimum terrain height over which to draw streets.  Default is -2.) int -2 -31000 31000
+mg_earth.settings.streets.terrain_min_height (Sets the minimum terrain height over which to draw streets.  Default is -2.) int -2 -31000 31000
 
 #If enabled, will generate cobblestone roads, (based on paramats Pathsv7).  Default is true.
-mg_earth.enable_roads (If enabled, will generate cobblestone roads along the terrain.  true / false) bool true
+mg_earth.settings.roads.enable (If enabled, will generate cobblestone roads along the terrain.  true / false) bool true
 
 #Sets the width of road.  Default is 1.
-mg_earth.road_width (Sets the width of road path used to draw road blocks.  Default is 2.) int 2 1 10
+mg_earth.settings.roads.width (Sets the width of road path used to draw road blocks.  Default is 2.) int 2 1 10
+
+#Sets the path_additive of road.  Default is 1.
+mg_earth.settings.roads.path_additive (Chooses type of random curvature of road path.  Default is 1.) int 1 1 6
 
 #Sets the road_sin_amplitude.  Default is 50.
-mg_earth.road_sin_amplitude (Sets the amplitude of the sine wave.  Default is 50.) int 50 1 100
+mg_earth.settings.roads.sin_amplitude (Sets the amplitude of the sine wave.  Default is 50.) int 50 0 100
 
 #Sets the road_sin_frequency.  Default is 0.0125.
-mg_earth.road_sin_frequency (Sets the frequency of the sine wave.  Default is 0.025.) float 0.025 0.0 1.0
+mg_earth.settings.roads.sin_frequency (Sets the frequency of the sine wave.  Default is 0.025.) float 0.025 0.0 1.0
 
 #Sets the road_grid_width.  Default is 500.
-mg_earth.road_grid_width (Sets the width of road grid.  roads are drawn along the x/z axis at this interval.  Default is 500.) int 500 10 2500
+mg_earth.settings.roads.grid_width (Sets the width of road grid.  roads are drawn along the x/z axis at this interval.  Default is 500.) int 500 0 2000
 
 #Sets the road_min_height.  Default is 4.
-mg_earth.road_min_height (Sets the minimum height of road surface.  Default is 4.) int 4 1 50
+mg_earth.settings.roads.min_height (Sets the minimum height of road surface.  Default is 4.) int 4 1 10
 
-#Sets the road_max_height.  Default is 180.
-mg_earth.road_max_height (Sets the maximum height of road surface.  Default is 180.) int 180 1 250
+#Sets the road_max_height.  Default is 40.
+mg_earth.settings.roads.max_height (Sets the maximum height of road surface.  Default is 40.) int 40 11 300
 
 #Sets the road_terrain_min_height.  Default is -2.
-mg_earth.road_terrain_min_height (Sets the minimum terrain height over which to draw roads.  Default is -2.) int -2 -31000 31000
+mg_earth.settings.roads.terrain_min_height (Sets the minimum terrain height over which to draw roads.  Default is -2.) int -2 -31000 31000
 
 #If enabled, will generate paths along the terrain.  Default is true.
-mg_earth.enable_paths (If enabled, will generate paths along the terrain.  true / false) bool true
+mg_earth.settings.paths.enable (If enabled, will generate paths along the terrain.  true / false) bool true
 
 #Sets the width of path.  Default is 2.
-mg_earth.path_width (Sets the width of path as drawn on the terrain.  Default is 2.) int 2 1 10
+mg_earth.settings.paths.width (Sets the width of path as drawn on the terrain.  Default is 2.) int 2 1 10
+
+#Sets the path_additive of paths.  Default is 3.
+mg_earth.settings.paths.path_additive (Chooses type of random curvature of trail path.  Default is 3.) int 3 1 6
 
 #Sets the path_sin_amplitude.  Default is 25.
-mg_earth.path_sin_amplitude (Sets the amplitude of the sine wave.  Default is 25.) int 25 1 100
+mg_earth.settings.paths.sin_amplitude (Sets the amplitude of the sine wave.  Default is 25.) int 25 0 100
 
 #Sets the path_sin_frequency.  Default is 0.025.
-mg_earth.path_sin_frequency (Sets the frequency of the sine wave.  Default is 0.025.) float 0.025 0.0 1.0
+mg_earth.settings.paths.sin_frequency (Sets the frequency of the sine wave.  Default is 0.025.) float 0.025 0.0 1.0
 
 #Sets the path_grid_width.  Default is 250.
-mg_earth.path_grid_width (Sets the width of path grid.  Paths are drawn along the x/z axis at this interval.  Default is 250.) int 250 10 2500
+mg_earth.settings.paths.grid_width (Sets the width of path grid.  Paths are drawn along the x/z axis at this interval.  Default is 250.) int 250 0 1000
 
 #Sets the path_min_height.  Default is 4.
-mg_earth.path_min_height (Sets the minimum height of path surface.  Default is 4.) int 4 1 50
+mg_earth.settings.paths.min_height (Sets the minimum height of path surface.  Default is 4.) int 4 1 10
 
-#Sets the path_max_height.  Default is 200.
-mg_earth.path_max_height (Sets the maximum height of path surface.  Default is 200.) int 200 1 250
+#Sets the path_max_height.  Default is 60.
+mg_earth.settings.paths.max_height (Sets the maximum height of path surface.  Default is 60.) int 60 11 300
 
 #Sets the path_terrain_min_height.  (Currently not used.)  Default is -2.
-mg_earth.path_terrain_min_height (Sets the minimum terrain height over which to draw paths.  (Currently not used.)  Default is -2.) int -2 -31000 31000
+mg_earth.settings.paths.terrain_min_height (Sets the minimum terrain height over which to draw paths.  (Currently not used.)  Default is -2.) int -2 -31000 31000
+
+#If enabled, will generate city grids along the terrain.  Default is false.
+mg_earth.settings.cities.enable (If enabled, will generate paths along the terrain.  true / false) bool false
+
+#Sets the style of roads drawn,  uses either path, road, or street.  Default is 3.
+mg_earth.settings.cities.style (Sets the style of roads drawn,  uses either path, road, or street.  Default is 3.) int 3 1 4
 
 #If enabled, will modify global heat values to mimic earth like temperatures, (hot at the equator, cold at the poles) with noise for minor variation.  Default is true.
-mg_earth.enable_heat_scalar (If enabled, will modify global heat values to mimic earth like temperatures, hot at the equator, cold at the poles with noise for minor variation.  true / false) bool true
+mg_earth.settings.enable_heat_scalar (If enabled, will modify global heat values to mimic earth like temperatures, hot at the equator, cold at the poles with noise for minor variation.  true / false) bool true
 
 #If enabled, will modify global humidity values to mimic earth like mean precipitation.  Latitude determines dry / wet, with noise to vary. Default is true.
-mg_earth.enable_humidity_scalar (If enabled, will modify global humidity values to mimic earth like mean precipitation.  Latitude determines dry / wet, with noise to vary.  true / false) bool true
+mg_earth.settings.enable_humidity_scalar (If enabled, will modify global humidity values to mimic earth like mean precipitation.  Latitude determines dry / wet, with noise to vary.  true / false) bool true
 
-#Selects from 15 options for terrain generation.  Includes vEarth, v3D, v6, v67, v7, vIslands, vValleys, vFlat, vVoronoi, vVoronoiPlus, vSpheres, vCubes, vDiamonds, vPlanetoids, vVoronoiCell.  Default is 1.
-mg_earth.heightmap (Selects from 27 options for terrain generation.  (See readme for details.)  Default is 1.) int 1 1 27
+#Enables 3D versions of vCarpathian and vValleys mapgens.  Default is false.
+mg_earth.settings.enable_3d_ver (Enables 3D terrain for Carpathian and Valleys mapgens.  Ignored for all others.  true / false) bool false
 
-#Selects from 19 options for vEarth noise generation.  Current options include 2dnoise, various configurations of v6, v7, vCarpathian, vIslands, vValleys, and development versions.  Default is 1.
-mg_earth.noisemap (Selects from 19 options for vEarth noise generation.  (See readme for details.)  Default is 1.) int 1 1 19
+#Enables vEarth, a voronoi based mapgen.  Can be used with v6, v7, vIslands, vLargeIslands, vNatural, and 2D versions of vCarpathian and vValleys.  Default is false.
+mg_earth.settings.enable_vEarth (Enables vEarth, a voronoi based mapgen.  true / false) bool false
+
+#Enables vEarthSimple, a voronoi based mapgen.  Can be used with v6, v7, vIslands, vLargeIslands, vNatural, and 2D versions of vCarpathian and vValleys.  Default is false.
+mg_earth.settings.enable_vEarthSimple (Enables vEarthSimple, a lighter version of vEarth mapgen.  true / false) bool false
+
+#Enables 3D mapgen.  Ignored for all others.  Default is false.
+mg_earth.settings.enable_v3D (Enables 3D mapgen.  Ignored for all others.  true / false) bool false
+
+#Enables v5 mapgen.  (WIP:  Does not function correctly, only very flat 2D heightmap.)  Default is false.
+mg_earth.settings.enable_v5 (Enables v5 mapgen.  Ignored for all others.  true / false) bool false
+
+#Enables v6 mapgen.  Can be used with v7, vEarth, vIslands, vLargeIslands, vNatural, and 2D versions of vCarpathian and vValleys.  Default is false.
+mg_earth.settings.enable_v6 (Enables v6 mapgen.  Can be used with v7, vEarth, vIslands, vLargeIslands, and 2D versions of vCarpathian and vValleys.  true / false) bool false
+
+#Enables v7 mapgen.  Can be used with v7, vEarth, vIslands, vLargeIslands, vNatural, and 2D versions of vCarpathian and vValleys.  Default is false.
+mg_earth.settings.enable_v7 (Enables v7 mapgen.  Can be used with v7, vEarth, vIslands, vLargeIslands, and 2D versions of vCarpathian and vValleys.  true / false) bool false
+
+#Enables vCarp mapgen.  Can be used with v7, vEarth, vIslands, vLargeIslands, vNatural, and 2D versions of vCarpathian and vValleys.  Default is false.
+mg_earth.settings.enable_vCarp (Enables vCarpathian mapgen.  Ignored for all others.  true / false) bool false
+
+#Enables mapgen based on the Diamond-Square algorithm.  Ignored for all others.  Default is false.
+mg_earth.settings.enable_vDiaSqr (Enables mapgen based on the Diamond-Square algorithm.  Ignored for all others.  true / false) bool false
+
+#Enables vIslands mapgen.  Can be used with v7, vEarth, vIslands, vLargeIslands, vNatural, and 2D versions of vCarpathian and vValleys.  Default is false.
+mg_earth.settings.enable_vIslands (Enables vIslands mapgen.  Can be used with v7, vEarth, vIslands, vLargeIslands, vNatural, and 2D versions of vCarpathian and vValleys.  true / false) bool false
+
+#Enables vLargeIslands mapgen.  Can be used with v7, vEarth, vIslands, vLargeIslands, vNatural, and 2D versions of vCarpathian and vValleys.  Default is false.
+mg_earth.settings.enable_vLargeIslands (Enables vLargeIslands mapgen.  Can be used with v7, vEarth, vIslands, vLargeIslands, vNatural, and 2D versions of vCarpathian and vValleys.  true / false) bool false
+
+#Enables vNatural mapgen.  Can be used with v7, vEarth, vIslands, vLargeIslands, and 2D versions of vCarpathian and vValleys.  Default is false.
+mg_earth.settings.enable_vNatural (Enables vNatural mapgen.  Can be used with v7, vEarth, vIslands, vLargeIslands, and 2D versions of vCarpathian and vValleys.  true / false) bool false
+
+#Enables vValleys mapgen.  Can be used with v7, vEarth, vIslands, vLargeIslands, and 2D versions of vCarpathian and vValleys.  Default is false.
+mg_earth.settings.enable_vValleys (Enables vValleys mapgen.  Can be used with v7, vEarth, vIslands, vLargeIslands, vNatural, and 2D versions of vCarpathian and vValleys.  true / false) bool false
+
+#Enables v2dnoise mapgen.  Can be used with v7, vEarth, vIslands, vLargeIslands, and 2D versions of vCarpathian and vValleys.  Default is false.
+mg_earth.settings.enable_v2d_noise (Enables v2dnoise mapgen.  Can be used with v7, vEarth, vIslands, vLargeIslands, vNatural, and 2D versions of vCarpathian and vValleys.  true / false) bool false
+
+#Enables v3dnoise mapgen.  Uses direct value of 3d noise as to generate heightmap.  Ignored for all others.  Default is false.
+mg_earth.settings.enable_v3d_noise (Enables 3D terrain for Carpathian and Valleys mapgens.  Ignored for all others.  true / false) bool false
+
+#Enables carving of cliffs for v7, vEarth, and 2D versions of vCarpathian and vValleys mapgens.  Ignored for all others.  Default is false.
+mg_earth.settings.enable_cliffs (Enables carving of cliffs for v7, vEarth, and 2D versions of vCarpathian and vValleys mapgens.  Ignored for all others.  true / false) bool false
+
+#Enable use of voronoi diagrams.  Default is false.
+mg_earth.settings.enable_voronoi (Enable use of voronoi diagrams.  true / false) bool false
+
+#Enables a heat / humidity scale factor that is applied to v6 mapgen.  For use when using v6 in addition to other mapgens.  Ignored for all others.  Default is false.
+mg_earth.settings.enable_v6_scalar (Enables a heat / humidity scale factor that is applied to v6 mapgen.  Ignored for all others.  true / false) bool false
+
+#Enables use of mapgen selected in mg_earth.settings.heightmap option.  Default is false.
+mg_earth.settings.enable_heightmap_select (Enables use of mapgen selected in 'mg_earth.settings.heightmap' option.  Ignored for all others.  true / false) bool false
+
+#Enables use of builtin or engine mapgens.  Default is false.
+mg_earth.settings.enable_builtin_heightmap (Enables use of builtin or engine mapgens.  Can be used with other options.  true / false) bool false
+
+#Enables use of experimental development mapgen.  Default is false.
+mg_earth.settings.enable_vDev (Enables use of experimental development mapgen.  Can be used with other options.  true / false) bool false
+
+#Enables use of experimental 3D development mapgen.  Default is false.
+mg_earth.settings.enable_vDev3D (Enables use of experimental 3D development mapgen.  Can be used with other options.  true / false) bool false
+
+#Enables use of other singlenode based mapgens.  See Readme for more details.  Default is false.
+mg_earth.settings.enable_singlenode_heightmap (Enables use of other singlenode based mapgens.  Can be used with other options.  true / false) bool false
+
+#Selects from 9 options for unique terrain generation.  1 = vFlat, 2 = vSpheres, 3 = vCubes, 4 = vDiamonds, 5 = vVoronoiCell, 6 = vTubes, 7 = vPlanetoids, 8 = vPlanets, 9 = vSolarSystem.  Default is 1.
+mg_earth.settings.heightmap (Selects from 8 options for terrain generation.  (See readme for details.)  Default is 1.) int 1 1 8
 
 #Selects how distance is measured.  Options are 1 = chebyshev, 2 = euclidean, 3 = manhattan, 4 = chebyshev plus manattan divided by 2.  Default is 4.
-mg_earth.voronoi_distance (Selects how distance is measured.  Options are 1 = chebyshev, 2 = euclidean, 3 = manhattan, 4 = chebyshev plus manattan divided by 2.  Default is 4.) int 4 1 4
+mg_earth.settings.voronoi_distance (Selects how distance is measured.  Options are 1 = chebyshev, 2 = euclidean, 3 = manhattan, 4 = chebyshev plus manattan divided by 2.  Default is 4.) int 4 1 4
 
 #	--manual seed options.		The named seeds below were used during dev, but were interesting enough to include.  The names were entered in the menu, and these resulted.
 #	--Default					= Terraria
@@ -136,53 +241,22 @@ mg_earth.voronoi_distance (Selects how distance is measured.  Options are 1 = ch
 #	--		Agape				= "12213145824342997182",
 #	--		Walmart				= "5081532735129490002",
 #Custom map seed. This setting overrides menu, map_meta settings.  Default is '16096304901732432682'.
-mg_earth.seed (Custom map seed.  Overrides menu setting.) string "16096304901732432682"
+mg_earth.settings.seed (Custom map seed.  Overrides menu setting.) string "16096304901732432682"
 
 #Custom selection of alternate voronoi point sets, which define continents.  Files are lua tables that reside in 'modpath/point_sets/', and must follow the convention. Default is 'points_earth'.
 #mg_earth.voronoi_file (Custom Voronoi Point Sets lua table file name.) string "points_earth"
-mg_earth.voronoi_file (Custom Voronoi Point Sets lua table file name.  Options are 1 = "points_earth", 2 = "points_dev_isle".  Default is 1.) int 1 1 2
+mg_earth.settings.voronoi_file (Custom Voronoi Point Sets lua table file name.  Options are 1 = "points_earth", 2 = "points_dev_isle".  Default is 1.) int 1 1 2
 
 #Custom selection of voronoi cell neighbors file.  This file is created and updated at runtime and save to the world folder on shutdown. Default is 'neighbors'.
-#mg_earth.voronoi_neighbor_file_suf (Custom Voronoi Point Sets lua table file name.) string "neighbors"
+#mg_earth.settings.voronoi_neighbor_file_suf (Custom Voronoi Point Sets lua table file name.) string "neighbors"
+
+
 
 #NOISE PARAMS
-#2D Base Noise.
-mg_earth.np_2d_base (Basic 2D noise) noise_params_2d -4, 25, (600, 600, 600), 5934, 7, 0.6, 2.15
 
-#2D Alt Noise.
-mg_earth.np_2d_alt (Alternate 2D noise) noise_params_2d -4, 25, (600, 600, 600), 5934, 7, 0.6, 2.15
+#v3D Noise.
+mg_earth.np_3dterrain (v3D noise) noise_params_3d 0, 1, (384, 192, 384), 5934, 5, 0.5, 2.11
 
-#2D Sine Noise.
-mg_earth.np_2d_sin (2d Sin noise) noise_params_2d 0, 1.2, (600, 600, 600), 5934, 7, 0.6, 2.15
-
-#River Jitter Noise.
-mg_earth.np_river_jitter (River Jitter noise) noise_params_2d 0, 50, (512, 512, 512), 513337, 7, 0.6, 2.11
-
-
-#v7 Alt Noise.
-mg_earth.np_v7_alt (v7 Alt noise) noise_params_2d -4, 25, (600, 600, 600), 5934, 7, 0.6, 2.19
-
-#v7 Base Noise.
-mg_earth.np_v7_base (v7 Base noise) noise_params_2d -4, 70, (600, 600, 600), 5934, 7, 0.6, 2.19
-
-#v7 Height Noise.
-mg_earth.np_v7_height (v7 Height Select noise) noise_params_2d 0.5, 1, (500, 500, 500), 4213, 7, 0.6, 2.19
-
-#v7 Persist Noise.
-mg_earth.np_v7_persist (v7 Persistance noise) noise_params_2d 0.6, 0.1, (2000, 2000, 2000), 539, 3, 0.6, 2.19
-
-
-#v6 Base Noise.
-mg_earth.np_v6_base (v6 Base noise) noise_params_2d -4, 20, (250, 250, 250), 82341, 5, 0.6, 2
-
-#v6 Higher Noise.
-mg_earth.np_v6_higher (v6 Higher noise) noise_params_2d 20, 16, (500, 500, 500), 85039, 5, 0.6, 2
-
-#v6 Steepness Noise.
-mg_earth.np_v6_steep (v6 Steepness noise) noise_params_2d 0.85, 0.5, (125, 125, 125),  -932, 5, 0.7, 2
-
-#v6 Height Select Noise.
-mg_earth.np_v6_height (v6 Height Select noise) noise_params_2d 0, 1, (250, 250, 250), 4213, 5, 0.69, 2
 
 
 #v5 Factor Noise.
@@ -198,23 +272,33 @@ mg_earth.np_v5_height (v5 Height noise) noise_params_2d 0, 10, (250, 250, 250), 
 mg_earth.np_v5_ground (v5 Ground noise) noise_params_2d 0, 40, (80, 80, 80), 983240, 4, 0.55, 2
 
 
-#vValleys Terrain Noise.
-mg_earth.np_val_terrain (vValleys Terrain noise) noise_params_2d -10, 50, (1024, 1024, 1024), 5934, 6, 0.4, 2
 
-#vValleys River Noise.
-mg_earth.np_val_river (vValleys River noise) noise_params_2d 0, 1, (256, 256, 256), -6050, 5, 0.6, 2
+#v6 Base Noise.
+mg_earth.np_v6_base (v6 Base noise) noise_params_2d -4, 20, (250, 250, 250), 82341, 5, 0.6, 2
 
-#vValleys Depth Noise.
-mg_earth.np_val_depth (vValleys Depth noise) noise_params_2d 5, 4, (512, 512, 512), -1914, 1, 1, 2
+#v6 Higher Noise.
+mg_earth.np_v6_higher (v6 Higher noise) noise_params_2d 20, 16, (500, 500, 500), 85039, 5, 0.6, 2
 
-#vValleys Profile Noise.
-mg_earth.np_val_profile (vValleys Profile noise) noise_params_2d 0.6, 0.5, (512, 512, 512), 777, 1, 1, 2
+#v6 Steepness Noise.
+mg_earth.np_v6_steep (v6 Steepness noise) noise_params_2d 0.85, 0.5, (125, 125, 125),  -932, 5, 0.7, 2
 
-#vValleys Slope Noise.
-mg_earth.np_val_slope (vValleys Slope noise) noise_params_2d 0.5, 0.5, (128, 128, 128), 746, 1, 1, 2
+#v6 Height Select Noise.
+mg_earth.np_v6_height (v6 Height Select noise) noise_params_2d 0, 1, (250, 250, 250), 4213, 5, 0.69, 2
 
-#vValleys Fill Noise.
-mg_earth.np_val_fill (vValleys Fill noise) noise_params_2d 0, 1, (256, 256, 256), 1993, 6, 0.8, 2
+
+
+#v7 Alt Noise.
+mg_earth.np_v7_alt (v7 Alt noise) noise_params_2d -4, 25, (600, 600, 600), 5934, 7, 0.6, 2.05
+
+#v7 Base Noise.
+mg_earth.np_v7_base (v7 Base noise) noise_params_2d -4, 70, (600, 600, 600), 5934, 7, 0.6, 2.05
+
+#v7 Height Noise.
+mg_earth.np_v7_height (v7 Height Select noise) noise_params_2d 0.5, 1, (500, 500, 500), 4213, 7, 0.6, 2.05
+
+#v7 Persist Noise.
+mg_earth.np_v7_persist (v7 Persistance noise) noise_params_2d 0.6, 0.1, (2000, 2000, 2000), 539, 3, 0.6, 2.05
+
 
 
 #Carpathian Noises
@@ -237,16 +321,102 @@ mg_earth.np_carp_mnt_ridge (vCarpathian Mnt Ridge noise) noise_params_2d 0, 12, 
 mg_earth.np_carp_mnt_var (vCarpathian Mnt Var noise) noise_params_3d 0, 1, (499, 499, 499), 2490, 5, 0.55, 2
 
 
-#v3D Noise.
-mg_earth.np_3dterrain (v3D noise) noise_params_3d 0, 1, (384, 192, 384), 5934, 5, 0.5, 2.11
+
+#2D Sine Noise.
+mg_earth.np_2d_sin (2d Sin noise) noise_params_2d 0, 1.2, (600, 600, 600), 5934, 7, 0.6, 2.15
+
+#River Jitter Noise.
+mg_earth.np_river_jitter (River Jitter noise) noise_params_2d 0, 50, (512, 512, 512), 513337, 7, 0.6, 2.11
 
 
-#Cliff Noise.
-mg_earth.np_cliffs (Cliff noise) noise_params_2d 0, 0.72, (180, 180, 180), 82735, 5, 0.5, 2.19
+
+#vIslands Alt Noise.
+mg_earth.np_islands_alt (vIslands alternate terrain noise) noise_params_2d -4, 25, (600, 600, 600), 5934, 7, 0.6, 2.05
+
+#vIslands Base Noise.
+mg_earth.np_islands_base (vIslands base terrain noise) noise_params_2d -4, 70, (600, 600, 600), 5934, 7, 0.6, 2.05
+
+#vIslands Height Noise.
+mg_earth.np_islands_height (vIslands Height Select noise) noise_params_2d 0.5, 1, (500, 500, 500), 4213, 7, 0.6, 2.05
+
+#vIslands Persist Noise.
+mg_earth.np_islands_persist (vIslands Persistance noise) noise_params_2d 0.6, 0.1, (2000, 2000, 2000), 539, 3, 0.6, 2.05
 
 
-#Fill Noise.
-mg_earth.np_fill (Fill noise) noise_params_2d 0, 1.2, (150, 150, 150), 261, 3, 0.7, 2
+
+#vLargeIslands Base Noise.
+mg_earth.np_largeislands_base (vLargeIslands base terrain noise) noise_params_2d -4, 25, (1200, 1200, 1200), 5934, 7, 0.6, 2.05
+
+#vLargeIslands Alt Noise.
+mg_earth.np_largeislands_alt (vLargeIslands alternate terrain noise) noise_params_2d -4, 70, (1200, 1200, 1200), 5934, 7, 0.6, 2.05
+
+#vLargeIslands Peak Noise.
+mg_earth.np_largeislands_peak (vLargeIslands peak terrain noise) noise_params_2d -4, 105, (1200, 1200, 1200), 5934, 7, 0.6, 2.05
+
+#vLargeIslands Height Noise.
+mg_earth.np_largeislands_height (vLargeIslands Height Select noise) noise_params_2d 0.5, 1, (500, 500, 500), 4213, 7, 0.6, 2.05
+
+#vLargeIslands Persist Noise.
+mg_earth.np_largeislands_persist (vLargeIslands Persistance noise) noise_params_2d 0.6, 0.1, (2000, 2000, 2000), 539, 3, 0.6, 2.05
+
+
+
+#vNatural Base Noise.
+mg_earth.np_vnatural_base (vNatural base terrain noise) noise_params_2d -4, 25, (1200, 1200, 1200), 5934, 7, 0.6, 2.05
+
+#vNatural Alt Noise.
+mg_earth.np_vnatural_alt (vNatural alternate terrain noise) noise_params_2d -4, 70, (1200, 1200, 1200), 5934, 7, 0.6, 2.05
+
+#vNatural Mount Noise.
+mg_earth.np_vnatural_mount (vNatural mount terrain noise) noise_params_2d -4, 105, (1200, 1200, 1200), 5934, 7, 0.6, 2.05
+
+#vNatural Peak Noise.
+mg_earth.np_vnatural_peak (vNatural peak terrain noise) noise_params_2d -4, 140, (1200, 1200, 1200), 5934, 7, 0.6, 2.05
+
+#vNatural Height Noise.
+mg_earth.np_vnatural_height (vNatural Height Select noise) noise_params_2d 0.5, 1, (500, 500, 500), 4213, 7, 0.6, 2.05
+
+#vNatural Persist Noise.
+mg_earth.np_vnatural_persist (vNatural Persistance noise) noise_params_2d 0.6, 0.1, (2000, 2000, 2000), 539, 3, 0.6, 2.05
+
+#mg_earth.np_vnatural_terrain_step (vNatural Terrain Step noise) noise_params_2d 1, 1, (1889, 1889, 1889), 4157, 5, 0.5, 2
+#mg_earth.np_vnatural_terrain_hills (vNatural Terrain Hills noise) noise_params_2d 1, 1, (1301, 1301, 1301), 1692, 5, 0.5, 2
+#mg_earth.np_vnatural_terrain_ridge (vNatural Terrain Ridge noise) noise_params_2d 1, 1, (1889, 1889, 1889), 3568, 5, 0.5, 2
+#mg_earth.np_vnatural_hills (vNatural Hills noise) noise_params_2d 0, 3, (257, 257, 257), 6604, 6, 0.5, 2
+#mg_earth.np_vnatural_mnt_step (vNatural Mnt Step noise) noise_params_2d 0, 8, (509, 509, 509), 2590, 6, 0.6, 2
+#mg_earth.np_vnatural_mnt_ridge (vNatural Mnt Ridge noise) noise_params_2d 0, 12, (743, 743, 743), 5520, 6, 0.7, 2
+#mg_earth.np_vnatural_mnt_var (vNatural Mnt Var noise) noise_params_3d 0, 1, (499, 499, 499), 2490, 5, 0.55, 2
+
+
+
+#vValleys Terrain Noise.
+mg_earth.np_val_terrain (vValleys Terrain noise) noise_params_2d -10, 50, (1024, 1024, 1024), 5934, 6, 0.4, 2
+
+#vValleys River Noise.
+mg_earth.np_val_river (vValleys River noise) noise_params_2d 0, 1, (256, 256, 256), -6050, 5, 0.6, 2
+
+#vValleys Depth Noise.
+mg_earth.np_val_depth (vValleys Depth noise) noise_params_2d 5, 4, (512, 512, 512), -1914, 1, 1, 2
+
+#vValleys Profile Noise.
+mg_earth.np_val_profile (vValleys Profile noise) noise_params_2d 0.6, 0.5, (512, 512, 512), 777, 1, 1, 2
+
+#vValleys Slope Noise.
+mg_earth.np_val_slope (vValleys Slope noise) noise_params_2d 0.5, 0.5, (128, 128, 128), 746, 1, 1, 2
+
+#vValleys Fill Noise.
+mg_earth.np_val_fill (vValleys Fill noise) noise_params_2d 0, 1, (256, 256, 256), 1993, 6, 0.8, 2
+
+
+
+#2d_noise Base Noise.
+mg_earth.np_2d_base (v2d_noise) noise_params_2d -4, 25, (600, 600, 600), 5934, 7, 0.6, 2.05
+
+
+
+#v3d_noise Base Noise.
+mg_earth.np_3d_noise (v3d_noise) noise_params_3d 0, 64, (384, 192, 384), 5934, 5, 0.5, 2.11
+
 
 
 #Cave1 Noise.
@@ -266,6 +436,41 @@ mg_earth.np_wave (Wave noise) noise_params_3d 0, 1, (256, 256, 256), -4000000000
 
 #Cave Biome Noise.
 mg_earth.np_cave_biome (Cave Biome noise) noise_params_2d 0, 1, (250, 250, 250), 9130, 3, 0.5, 2
+
+
+
+#Road Bridge Column Noise.
+mg_earth.np_bridge_column (Road Bridge Column noise) noise_params_2d 0, 1, (8, 8, 8), 1728833, 3, 2, 2
+
+#City Grid Base Noise.
+mg_earth.np_grid_base (City Grid Base noise) noise_params_2d 0, 1, (512, 512, 512), 5934, 6, 0.6, 2
+
+#City Grid City Noise.
+mg_earth.np_grid_city (City Grid City noise) noise_params_2d 0, 1, (256, 256, 256), 3166616, 5, 0.5, 2
+
+#City Grid Road Noise.
+mg_earth.np_grid_road (City Grid Road noise) noise_params_2d 0, 1, (512, 512, 512), 5934, 5, 0.5, 2
+
+#Road Noise.
+mg_earth.np_road (Road noise) noise_params_2d 0, 31000, (256, 256, 256), 8675309, 1, 0.5, 2
+
+#Road Jitter Noise.
+mg_earth.np_road_jitter (Road Jitter noise) noise_params_2d 0, 20, (256, 256, 256), 5934, 7, 0.6, 2.05
+
+
+
+#Cliff Noise.
+mg_earth.np_cliffs (Cliff noise) noise_params_2d 0, 0.72, (180, 180, 180), 82735, 5, 0.5, 2.19
+
+
+
+#Fill Noise.
+mg_earth.np_fill (Fill noise) noise_params_2d 0, 1.2, (150, 150, 150), 261, 3, 0.7, 2
+
+
+
+#2D Sine Noise.
+mg_earth.np_sin (Sine Wave noise) noise_params_2d 0, 1.2, (512, 512, 512), 513337, 5, 0.5, 2
 
 
 

@@ -1,9 +1,23 @@
+if mg_earth.gal then
+	mg_earth.node_sound_defaults = gal.node_sound_defaults
+	mg_earth.node_sound_stone_defaults = gal.node_sound_stone_defaults
+	mg_earth.node_sound_wood_defaults = gal.node_sound_wood_defaults
+end
+if mg_earth.default then
+	mg_earth.node_sound_defaults = default.node_sound_defaults
+	mg_earth.node_sound_stone_defaults = default.node_sound_stone_defaults
+	mg_earth.node_sound_wood_defaults = default.node_sound_wood_defaults
+end
+
+
+
+
 minetest.register_node("mg_earth:junglewood", {
 	description = "Mod jungle wood",
 	tiles = {"default_cobble.png"},
 	is_ground_content = false,
 	groups = {choppy = 2, oddly_breakable_by_hand = 2, flammable = 2},
-	sounds = default.node_sound_wood_defaults(),
+	sounds = mg_earth.node_sound_wood_defaults(),
 })
 
 minetest.register_node("mg_earth:bridgewood", {
@@ -11,7 +25,7 @@ minetest.register_node("mg_earth:bridgewood", {
 	tiles = {"default_stone_block.png"},
 	is_ground_content = false,
 	groups = {choppy = 2, oddly_breakable_by_hand = 2, flammable = 2},
-	sounds = default.node_sound_wood_defaults(),
+	sounds = mg_earth.node_sound_wood_defaults(),
 })
 
 minetest.register_node("mg_earth:stairn", { -- stair rising to the north
@@ -28,7 +42,7 @@ minetest.register_node("mg_earth:stairn", { -- stair rising to the north
 			{-0.5, 0, 0, 0.5, 0.5, 0.5},
 		},
 	},
-	sounds = default.node_sound_wood_defaults(),
+	sounds = mg_earth.node_sound_wood_defaults(),
 })
 
 minetest.register_node("mg_earth:stairs", {
@@ -45,7 +59,7 @@ minetest.register_node("mg_earth:stairs", {
 			{-0.5, 0, -0.5, 0.5, 0.5, 0},
 		},
 	},
-	sounds = default.node_sound_wood_defaults(),
+	sounds = mg_earth.node_sound_wood_defaults(),
 })
 
 minetest.register_node("mg_earth:staire", {
@@ -62,7 +76,7 @@ minetest.register_node("mg_earth:staire", {
 			{0, 0, -0.5, 0.5, 0.5, 0.5},
 		},
 	},
-	sounds = default.node_sound_wood_defaults(),
+	sounds = mg_earth.node_sound_wood_defaults(),
 })
 
 minetest.register_node("mg_earth:stairw", {
@@ -79,7 +93,7 @@ minetest.register_node("mg_earth:stairw", {
 			{-0.5, 0, -0.5, 0, 0.5, 0.5},
 		},
 	},
-	sounds = default.node_sound_wood_defaults(),
+	sounds = mg_earth.node_sound_wood_defaults(),
 })
 
 minetest.register_node("mg_earth:stairne", {
@@ -96,7 +110,7 @@ minetest.register_node("mg_earth:stairne", {
 			{0, 0, 0, 0.5, 0.5, 0.5},
 		},
 	},
-	sounds = default.node_sound_wood_defaults(),
+	sounds = mg_earth.node_sound_wood_defaults(),
 })
 
 minetest.register_node("mg_earth:stairnw", {
@@ -113,7 +127,7 @@ minetest.register_node("mg_earth:stairnw", {
 			{-0.5, 0, 0, 0, 0.5, 0.5},
 		},
 	},
-	sounds = default.node_sound_wood_defaults(),
+	sounds = mg_earth.node_sound_wood_defaults(),
 })
 
 minetest.register_node("mg_earth:stairse", {
@@ -130,7 +144,7 @@ minetest.register_node("mg_earth:stairse", {
 			{0, 0, -0.5, 0.5, 0.5, 0},
 		},
 	},
-	sounds = default.node_sound_wood_defaults(),
+	sounds = mg_earth.node_sound_wood_defaults(),
 })
 
 minetest.register_node("mg_earth:stairsw", {
@@ -147,7 +161,7 @@ minetest.register_node("mg_earth:stairsw", {
 			{-0.5, 0, -0.5, 0, 0.5, 0},
 		},
 	},
-	sounds = default.node_sound_wood_defaults(),
+	sounds = mg_earth.node_sound_wood_defaults(),
 })
 
 minetest.register_node("mg_earth:road_black", {
@@ -155,7 +169,7 @@ minetest.register_node("mg_earth:road_black", {
 	tiles = {"roadv7_road_black.png"},
 	is_ground_content = false,
 	groups = {cracky = 2},
-	sounds = default.node_sound_stone_defaults(),
+	sounds = mg_earth.node_sound_stone_defaults(),
 })
 
 minetest.register_node("mg_earth:road_black_slab", {
@@ -173,7 +187,7 @@ minetest.register_node("mg_earth:road_black_slab", {
 		fixed = {{-0.5, -0.5, -0.5, 0.5, 0, 0.5}},
 	},
 	groups = {cracky = 2},
-	sounds = default.node_sound_stone_defaults(),
+	sounds = mg_earth.node_sound_stone_defaults(),
 })
 
 minetest.register_node("mg_earth:road_white", {
@@ -183,7 +197,7 @@ minetest.register_node("mg_earth:road_white", {
 	light_source = 12,
 	is_ground_content = false,
 	groups = {cracky = 2},
-	sounds = default.node_sound_stone_defaults(),
+	sounds = mg_earth.node_sound_stone_defaults(),
 })
 
 minetest.register_node("mg_earth:concrete", {
@@ -191,5 +205,5 @@ minetest.register_node("mg_earth:concrete", {
 	tiles = {"roadv7_concrete.png"},
 	is_ground_content = false,
 	groups = {cracky = 2},
-	sounds = default.node_sound_stone_defaults(),
+	sounds = mg_earth.node_sound_stone_defaults(),
 })
