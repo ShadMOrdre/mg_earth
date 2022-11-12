@@ -175,25 +175,31 @@ mg_earth.settings.enable_vCarp (Enables vCarpathian mapgen.  Ignored for all oth
 mg_earth.settings.enable_vDiaSqr (Enables mapgen based on the Diamond-Square algorithm.  Ignored for all others.  true / false) bool false
 
 #Enables vIslands mapgen.  Can be used with v7, vEarth, vIslands, vLargeIslands, vNatural, and 2D versions of vCarpathian and vValleys.  Default is false.
-mg_earth.settings.enable_vIslands (Enables vIslands mapgen.  Can be used with v7, vEarth, vIslands, vLargeIslands, vNatural, and 2D versions of vCarpathian and vValleys.  true / false) bool false
+mg_earth.settings.enable_vIslands (Enables vIslands mapgen.  true / false) bool false
 
 #Enables vLargeIslands mapgen.  Can be used with v7, vEarth, vIslands, vLargeIslands, vNatural, and 2D versions of vCarpathian and vValleys.  Default is false.
-mg_earth.settings.enable_vLargeIslands (Enables vLargeIslands mapgen.  Can be used with v7, vEarth, vIslands, vLargeIslands, vNatural, and 2D versions of vCarpathian and vValleys.  true / false) bool false
+mg_earth.settings.enable_vLargeIslands (Enables vLargeIslands mapgen.  true / false) bool false
 
 #Enables vNatural mapgen.  Can be used with v7, vEarth, vIslands, vLargeIslands, and 2D versions of vCarpathian and vValleys.  Default is false.
-mg_earth.settings.enable_vNatural (Enables vNatural mapgen.  Can be used with v7, vEarth, vIslands, vLargeIslands, and 2D versions of vCarpathian and vValleys.  true / false) bool false
+mg_earth.settings.enable_vNatural (Enables vNatural mapgen.  true / false) bool false
 
 #Enables vValleys mapgen.  Can be used with v7, vEarth, vIslands, vLargeIslands, and 2D versions of vCarpathian and vValleys.  Default is false.
-mg_earth.settings.enable_vValleys (Enables vValleys mapgen.  Can be used with v7, vEarth, vIslands, vLargeIslands, vNatural, and 2D versions of vCarpathian and vValleys.  true / false) bool false
+mg_earth.settings.enable_vValleys (Enables vValleys mapgen.  true / false) bool false
 
 #Enables v2dnoise mapgen.  Can be used with v7, vEarth, vIslands, vLargeIslands, and 2D versions of vCarpathian and vValleys.  Default is false.
-mg_earth.settings.enable_v2d_noise (Enables v2dnoise mapgen.  Can be used with v7, vEarth, vIslands, vLargeIslands, vNatural, and 2D versions of vCarpathian and vValleys.  true / false) bool false
+mg_earth.settings.enable_v2d_noise (Enable v2dnoise mapgen.  true / false) bool false
 
 #Enables v3dnoise mapgen.  Uses direct value of 3d noise as to generate heightmap.  Ignored for all others.  Default is false.
-mg_earth.settings.enable_v3d_noise (Enables 3D terrain for Carpathian and Valleys mapgens.  Ignored for all others.  true / false) bool false
+mg_earth.settings.enable_v3d_noise (Enable v3dnoise mapgen.  true / false) bool false
 
 #Enables carving of cliffs for v7, vEarth, and 2D versions of vCarpathian and vValleys mapgens.  Ignored for all others.  Default is false.
-mg_earth.settings.enable_cliffs (Enables carving of cliffs for v7, vEarth, and 2D versions of vCarpathian and vValleys mapgens.  Ignored for all others.  true / false) bool false
+mg_earth.settings.enable_cliffs (Enable cliffs.  true / false) bool false
+
+#Enables rugged application of Carpathian mapgen logic to generated mapgens.  Default is false.
+mg_earth.settings.enable_carp_mount (Enable rugged Carpathian.  true / false) bool false
+
+#Enables smooth application of Carpathian mapgen logic to generated mapgens.  Default is false.
+mg_earth.settings.enable_carp_smooth (Enable smooth Carpathian.  true / false) bool false
 
 #Enable use of voronoi diagrams.  Default is false.
 mg_earth.settings.enable_voronoi (Enable use of voronoi diagrams.  true / false) bool false

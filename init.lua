@@ -118,15 +118,19 @@ mg_earth.settings = {
 	enable_v7					= minetest.settings:get_bool("mg_earth.settings.enable_v7")							or false,
 	enable_vCarp				= minetest.settings:get_bool("mg_earth.settings.enable_vCarp")						or false,
 	enable_vDiaSqr				= minetest.settings:get_bool("mg_earth.settings.enable_vDiaSqr")					or false,
-	enable_vIslands				= minetest.settings:get_bool("mg_earth.settings.enable_vIslands")					or false,
+	enable_vIslands				= minetest.settings:get_bool("mg_earth.settings.enable_vIslands")					or true,
 	enable_vLargeIslands		= minetest.settings:get_bool("mg_earth.settings.enable_vLargeIslands")				or false,
-	enable_vNatural				= minetest.settings:get_bool("mg_earth.settings.enable_vNatural")					or true,
+	enable_vNatural				= minetest.settings:get_bool("mg_earth.settings.enable_vNatural")					or false,
 	enable_vAltNatural			= minetest.settings:get_bool("mg_earth.settings.enable_vAltNatural")				or false,
 	enable_vValleys				= minetest.settings:get_bool("mg_earth.settings.enable_vValleys")					or false,
 	enable_v2d_noise			= minetest.settings:get_bool("mg_earth.settings.enable_v2d_noise")					or false,
 	enable_v3d_noise			= minetest.settings:get_bool("mg_earth.settings.enable_v3d_noise")					or false,
 	enable_cliffs				= minetest.settings:get_bool("mg_earth.settings.enable_cliffs")						or false,
-	enable_carpathia			= minetest.settings:get_bool("mg_earth.settings.enable_carpathia")					or false,
+	-- enable_carpathia			= minetest.settings:get_bool("mg_earth.settings.enable_carpathia")					or false,
+	enable_carp_mount			= minetest.settings:get_bool("mg_earth.settings.enable_carp_mount")					or false,
+	-- enable_carp_mount			= 																					   false,
+	enable_carp_smooth			= minetest.settings:get_bool("mg_earth.settings.enable_carp_smooth")				or false,
+	-- enable_carp_smooth			= 																					   false,
 	enable_voronoi				= minetest.settings:get_bool("mg_earth.settings.enable_voronoi")					or false,
 	enable_v6_scalar			= minetest.settings:get_bool("mg_earth.settings.enable_v6_scalar")					or false,
 	enable_heightmap_select		= minetest.settings:get_bool("mg_earth.settings.enable_heightmap_select")			or false,
@@ -517,6 +521,8 @@ mg_earth.config.enable_vDev					=  mg_earth.settings.enable_vDev
 mg_earth.config.enable_vDev3D				=  mg_earth.settings.enable_vDev3D
 mg_earth.config.enable_cliffs				=  mg_earth.settings.enable_cliffs
 mg_earth.config.enable_carpathia			=  mg_earth.settings.enable_carpathia
+mg_earth.config.enable_carp_mount			=  mg_earth.settings.enable_carp_mount
+mg_earth.config.enable_carp_smooth			=  mg_earth.settings.enable_carp_smooth
 mg_earth.config.enable_voronoi				=  mg_earth.settings.enable_voronoi
 mg_earth.config.enable_v6_scalar			=  mg_earth.settings.enable_v6_scalar
 
@@ -1176,7 +1182,7 @@ if (mg_earth.config.enable_vCarp == true) then
 
 end
 
-if (mg_earth.config.enable_vCarp == true) or (mg_earth.config.enable_carpathia == true) then
+if (mg_earth.config.enable_vCarp == true) or (mg_earth.config.enable_carp_mount == true) or (mg_earth.config.enable_carp_smooth == true) or (mg_earth.config.enable_carpathia == true) then
 
 	-- Terrain feature noise  2D
 	mg_earth["np_carp_terrain_step"] = {
@@ -1824,64 +1830,6 @@ mg_earth["np_humid_blend"] = {
 	persist = 1,
 }
 
-
-
-
---[[  Road Schematics.   NOT USED
-mg_earth.road_schem_3x3 = {
-	size = {x = 3, y = 6, z = 3},
-	data = {
-		{name = "default:cobble", param2 = 0, force_place = true, prob = 254}, {name = "default:cobble", param2 = 0, force_place = true, prob = 254}, {name = "default:cobble", param2 = 0, force_place = true, prob = 254},
-		{name = "default:cobble", param2 = 0, force_place = true, prob = 254}, {name = "default:cobble", param2 = 0, force_place = true, prob = 254}, {name = "default:cobble", param2 = 0, force_place = true, prob = 254},
-		{name = "air", param2 = 0, force_place = true, prob = 0}, {name = "air", param2 = 0, force_place = true, prob = 0}, {name = "air", param2 = 0, force_place = true, prob = 0},
-		{name = "air", param2 = 0, force_place = true, prob = 0}, {name = "air", param2 = 0, force_place = true, prob = 0}, {name = "air", param2 = 0, force_place = true, prob = 0},
-		{name = "air", param2 = 0, force_place = true, prob = 0}, {name = "air", param2 = 0, force_place = true, prob = 0}, {name = "air", param2 = 0, force_place = true, prob = 0},
-		{name = "air", param2 = 0, force_place = true, prob = 0}, {name = "air", param2 = 0, force_place = true, prob = 0}, {name = "air", param2 = 0, force_place = true, prob = 0},
-
-		{name = "default:cobble", param2 = 0, force_place = true, prob = 254}, {name = "default:cobble", param2 = 0, force_place = true, prob = 254}, {name = "default:cobble", param2 = 0, force_place = true, prob = 254},
-		{name = "default:cobble", param2 = 0, force_place = true, prob = 254}, {name = "default:cobble", param2 = 0, force_place = true, prob = 254}, {name = "default:cobble", param2 = 0, force_place = true, prob = 254},
-		{name = "air", param2 = 0, force_place = true, prob = 0}, {name = "air", param2 = 0, force_place = true, prob = 0}, {name = "air", param2 = 0, force_place = true, prob = 0},
-		{name = "air", param2 = 0, force_place = true, prob = 0}, {name = "air", param2 = 0, force_place = true, prob = 0}, {name = "air", param2 = 0, force_place = true, prob = 0},
-		{name = "air", param2 = 0, force_place = true, prob = 0}, {name = "air", param2 = 0, force_place = true, prob = 0}, {name = "air", param2 = 0, force_place = true, prob = 0},
-		{name = "air", param2 = 0, force_place = true, prob = 0}, {name = "air", param2 = 0, force_place = true, prob = 0}, {name = "air", param2 = 0, force_place = true, prob = 0},
-
-		{name = "default:cobble", param2 = 0, force_place = true, prob = 254}, {name = "default:cobble", param2 = 0, force_place = true, prob = 254}, {name = "default:cobble", param2 = 0, force_place = true, prob = 254},
-		{name = "default:cobble", param2 = 0, force_place = true, prob = 254}, {name = "default:cobble", param2 = 0, force_place = true, prob = 254}, {name = "default:cobble", param2 = 0, force_place = true, prob = 254},
-		{name = "air", param2 = 0, force_place = true, prob = 0}, {name = "air", param2 = 0, force_place = true, prob = 0}, {name = "air", param2 = 0, force_place = true, prob = 0},
-		{name = "air", param2 = 0, force_place = true, prob = 0}, {name = "air", param2 = 0, force_place = true, prob = 0}, {name = "air", param2 = 0, force_place = true, prob = 0},
-		{name = "air", param2 = 0, force_place = true, prob = 0}, {name = "air", param2 = 0, force_place = true, prob = 0}, {name = "air", param2 = 0, force_place = true, prob = 0},
-		{name = "air", param2 = 0, force_place = true, prob = 0}, {name = "air", param2 = 0, force_place = true, prob = 0}, {name = "air", param2 = 0, force_place = true, prob = 0}
-	},
-	yslice_prob = {
-		-- {ypos = 0,prob = 254},
-		-- {ypos = 1,prob = 254},
-		-- {ypos = 2,prob = 254},
-		-- {ypos = 3,prob = 254},
-		-- {ypos = 4,prob = 254},
-		-- {ypos = 5,prob = 254}
-	}
-}
-mg_earth.road_schem_3x1 = {
-	size = {x = 3, y = 7, z = 1},
-	data = {
-		{name = "default:cobble", param2 = 0, force_place = true, prob = 254}, {name = "default:cobble", param2 = 0, force_place = true, prob = 254}, {name = "default:cobble", param2 = 0, force_place = true, prob = 254},
-		{name = "default:cobble", param2 = 0, force_place = true, prob = 254}, {name = "default:cobble", param2 = 0, force_place = true, prob = 254}, {name = "default:cobble", param2 = 0, force_place = true, prob = 254},
-		{name = "air", param2 = 0, force_place = true, prob = 0}, {name = "air", param2 = 0, force_place = true, prob = 0}, {name = "air", param2 = 0, force_place = true, prob = 0},
-		{name = "air", param2 = 0, force_place = true, prob = 0}, {name = "air", param2 = 0, force_place = true, prob = 0}, {name = "air", param2 = 0, force_place = true, prob = 0},
-		{name = "air", param2 = 0, force_place = true, prob = 0}, {name = "air", param2 = 0, force_place = true, prob = 0}, {name = "air", param2 = 0, force_place = true, prob = 0},
-		{name = "air", param2 = 0, force_place = true, prob = 0}, {name = "air", param2 = 0, force_place = true, prob = 0}, {name = "air", param2 = 0, force_place = true, prob = 0},
-		{name = "air", param2 = 0, force_place = true, prob = 0}, {name = "air", param2 = 0, force_place = true, prob = 0}, {name = "air", param2 = 0, force_place = true, prob = 0}
-	},
-	yslice_prob = {
-		-- {ypos = 0,prob = 254},
-		-- {ypos = 1,prob = 254},
-		-- {ypos = 2,prob = 254},
-		-- {ypos = 3,prob = 254},
-		-- {ypos = 4,prob = 254},
-		-- {ypos = 5,prob = 254}
-	}
-}
---]]
 
 -- Do files
 
@@ -3799,6 +3747,60 @@ local function get_terrain_carpathia(theight,z,x)
 
 end
 
+local function get_carp_smooth(theight,z,x)
+
+	local n_terrain_hills = abs(minetest.get_perlin(mg_earth["np_carp_terrain_step"]):get_2d({x=x,y=z}))
+	local n_terrain_ridge = abs(minetest.get_perlin(mg_earth["np_carp_terrain_ridge"]):get_2d({x=x,y=z}))
+	local n_terrain_step = abs(minetest.get_perlin(mg_earth["np_carp_terrain_step"]):get_2d({x=x,y=z}))
+	local n_hills = minetest.get_perlin(mg_earth["np_carp_hills"]):get_2d({x=x,y=z})
+	local n_mnt_ridge = minetest.get_perlin(mg_earth["np_carp_mnt_ridge"]):get_2d({x=x,y=z})
+	local n_mnt_step = minetest.get_perlin(mg_earth["np_carp_mnt_step"]):get_2d({x=x,y=z})
+	
+	local hill_mnt = (n_terrain_hills * n_terrain_hills * n_terrain_hills * n_hills * n_hills) * 0.618033988749
+	local ridge_mnt =  (n_terrain_ridge * n_terrain_ridge * n_terrain_ridge * (1.0 - abs(n_mnt_ridge))) * 0.618033988749
+	local step_mnt =  (n_terrain_step * n_terrain_step * n_terrain_step * steps(n_mnt_step)) * 0.618033988749
+
+	local hilliness = theight * 0.0618033988749
+
+	local hills = hill_mnt * hilliness
+	local ridged_mountains = ridge_mnt * hilliness
+	local step_mountains = step_mnt * hilliness
+
+	local mountains = hills + ridged_mountains + step_mountains
+
+	local surface_level = (theight * 0.618033988749) + mountains
+
+	return surface_level
+
+end
+
+local function get_carp_mount(theight,z,x)
+
+	local n_terrain_hills = abs(minetest.get_perlin(mg_earth["np_carp_terrain_step"]):get_2d({x=x,y=z}))
+	local n_terrain_ridge = abs(minetest.get_perlin(mg_earth["np_carp_terrain_ridge"]):get_2d({x=x,y=z}))
+	local n_terrain_step = abs(minetest.get_perlin(mg_earth["np_carp_terrain_step"]):get_2d({x=x,y=z}))
+	local n_hills = minetest.get_perlin(mg_earth["np_carp_hills"]):get_2d({x=x,y=z})
+	local n_mnt_ridge = minetest.get_perlin(mg_earth["np_carp_mnt_ridge"]):get_2d({x=x,y=z})
+	local n_mnt_step = minetest.get_perlin(mg_earth["np_carp_mnt_step"]):get_2d({x=x,y=z})
+	
+	local hill_mnt = n_terrain_hills * n_terrain_hills * n_terrain_hills * n_hills * n_hills
+	local ridge_mnt =  n_terrain_ridge * n_terrain_ridge * n_terrain_ridge * (1.0 - abs(n_mnt_ridge))
+	local step_mnt =  n_terrain_step * n_terrain_step * n_terrain_step * steps(n_mnt_step)
+
+	local hilliness = theight * 0.0618033988749
+	
+	local hills = hill_mnt * hilliness
+	local ridged_mountains = ridge_mnt * hilliness
+	local step_mountains = step_mnt * hilliness
+
+	local mountains = (hills + ridged_mountains + step_mountains) * 0.618033988749
+
+	local surface_level = (theight * 0.618033988749) + mountains
+
+	return surface_level
+
+end
+
 local function get_v5_height(z,x)
 
 	local filldepth = minetest.get_perlin(mg_earth["np_v5_fill_depth"]):get_2d({x=x,y=z})
@@ -4249,7 +4251,7 @@ local function get_vNatural_height(z,x)
 
 	local mountains = hills + ridged_mountains + step_mountains
 
-	local surface_level = e_base + mountains
+	local surface_level = ((e_base + h_base) * 0.618033988749) + mountains
 
 	return surface_level, t_cliff
 
@@ -4800,6 +4802,18 @@ local function get_mg_heightmap(ppos,nheat,nhumid,i2d)
 
 	if mg_earth.config.enable_carpathia == true then
 		nheight = get_terrain_carpathia(nterrain,ppos.z,ppos.x)
+	else
+		nheight = nterrain
+	end
+
+	if mg_earth.config.enable_carp_mount == true then
+		nheight = get_carp_mount(nterrain,ppos.z,ppos.x)
+	else
+		nheight = nterrain
+	end
+
+	if mg_earth.config.enable_carp_smooth == true then
+		nheight = get_carp_smooth(nterrain,ppos.z,ppos.x)
 	else
 		nheight = nterrain
 	end
@@ -7795,8 +7809,6 @@ local function generate_map(minp, maxp, seed)
 	nobj_humidityblend = nobj_humidityblend or minetest.get_perlin_map(mg_earth["np_humid_blend"], {x = maxp.x - minp.x + 1, y = maxp.x - minp.x + 1, z = 0})
 	nbuf_humidityblend = nobj_humidityblend:get_2d_map({x = minp.x, y = minp.z})
 
-	-- local r_schem = mg_earth.road_schem_3x1
-
 	local write = false
 
 	-- Mapgen preparation is now finished. Check the timer to know the elapsed time.
@@ -7848,28 +7860,15 @@ local function generate_map(minp, maxp, seed)
 				local ivm = area:index(x, y, z)
 				local ai = area:index(x,y+1,z) --above index
 				local bi = area:index(x,y-1,z) --below index
-				-- local xn = a:index(x-3,y,z) --below index
-				-- local xp = a:index(x+3,y,z) --below index
-				-- local zn = a:index(x,y,z-3) --below index
-				-- local zp = a:index(x,y,z+3) --below index
 
 				local write_3d = true
 				--local write_3d = false
 
 				local t_height				= mg_earth.heightmap[index2d]
 				local t_biome				= mg_earth.biomemap[index2d]
-				-- local t_eco					= mg_earth.eco_map[index2d]
+
 				local t_heat				= mg_earth.biome_info[t_biome].b_heat
 				local t_humid				= mg_earth.biome_info[t_biome].b_humid
-				-- local t_river_map			= mg_earth.valleysrivermap[index2d] or (mg_earth.config.river_size_factor + 1)
-				-- local t_river_map			= mg_earth.valleysrivermap[index2d]
-				-- local t_river_map			= mg_earth.rivermap[index2d]
-				-- local t_road				= mg_earth.roadmap[index2d]
-				-- local t_road_height			= mg_earth.roadheight[index2d]
-				-- local t_road_dir			= mg_earth.roaddirmap[index2d]
-				-- local t_path				= mg_earth.pathmap[index2d]
-				-- local t_path_height			= mg_earth.pathheight[index2d]
-				-- local t_path_dir			= mg_earth.pathdirmap[index2d]
 
 				local t_filldepth			= 4 + mg_earth.fillmap[index2d]
 				local t_filldepth			= 4
