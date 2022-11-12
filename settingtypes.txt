@@ -1,5 +1,8 @@
 #mg_earth settings
 
+#Enables / Disables mg_earth mapgen.  True / False. Default is true.
+mg_earth.enabled (Enables use of mg_earth mapgen.  true / false) bool true
+
 #Defines the scale in which the world is generated.  Has the effect of making a map of size 300m x 300m to 30000m x 30000m.
 mg_earth.mg_world_scale (Sets the scale of the world map.  Valid values are from 0.01 to >= 1. Default is 1.) float 1.0 0.01 1.0
 
