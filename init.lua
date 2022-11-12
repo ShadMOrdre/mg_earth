@@ -520,7 +520,7 @@ mg_earth.config.enable_singlenode_heightmap	=  mg_earth.settings.enable_singleno
 mg_earth.config.enable_vDev					=  mg_earth.settings.enable_vDev
 mg_earth.config.enable_vDev3D				=  mg_earth.settings.enable_vDev3D
 mg_earth.config.enable_cliffs				=  mg_earth.settings.enable_cliffs
-mg_earth.config.enable_carpathia			=  mg_earth.settings.enable_carpathia
+-- mg_earth.config.enable_carpathia			=  mg_earth.settings.enable_carpathia
 mg_earth.config.enable_carp_mount			=  mg_earth.settings.enable_carp_mount
 mg_earth.config.enable_carp_smooth			=  mg_earth.settings.enable_carp_smooth
 mg_earth.config.enable_voronoi				=  mg_earth.settings.enable_voronoi
@@ -4800,11 +4800,11 @@ local function get_mg_heightmap(ppos,nheat,nhumid,i2d)
 		nheight = nterrain
 	end
 
-	if mg_earth.config.enable_carpathia == true then
-		nheight = get_terrain_carpathia(nterrain,ppos.z,ppos.x)
-	else
-		nheight = nterrain
-	end
+	-- if mg_earth.config.enable_carpathia == true then
+		-- nheight = get_terrain_carpathia(nterrain,ppos.z,ppos.x)
+	-- else
+		-- nheight = nterrain
+	-- end
 
 	if mg_earth.config.enable_carp_mount == true then
 		nheight = get_carp_mount(nterrain,ppos.z,ppos.x)
