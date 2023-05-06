@@ -2,15 +2,15 @@ if mg_earth.gal then
 	mg_earth.node_sound_defaults = gal.node_sound_defaults
 	mg_earth.node_sound_stone_defaults = gal.node_sound_stone_defaults
 	mg_earth.node_sound_wood_defaults = gal.node_sound_wood_defaults
-end
-if mg_earth.default then
+elseif mg_earth.default then
 	mg_earth.node_sound_defaults = default.node_sound_defaults
 	mg_earth.node_sound_stone_defaults = default.node_sound_stone_defaults
 	mg_earth.node_sound_wood_defaults = default.node_sound_wood_defaults
+elseif mg_earth.mcl_sounds then
+	mg_earth.node_sound_defaults = mcl_sounds.node_sound_defaults
+	mg_earth.node_sound_stone_defaults = mcl_sounds.node_sound_stone_defaults
+	mg_earth.node_sound_wood_defaults = mcl_sounds.node_sound_wood_defaults
 end
-
-
-
 
 minetest.register_node("mg_earth:junglewood", {
 	description = "Mod jungle wood",
