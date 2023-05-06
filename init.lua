@@ -138,6 +138,8 @@ mg_earth.settings = {
 	enable_vDev					= minetest.settings:get_bool("mg_earth.settings.enable_vDev")						or false,
 	enable_vDev3D				= minetest.settings:get_bool("mg_earth.settings.enable_vDev3D")						or false,
 	enable_singlenode_heightmap	= minetest.settings:get_bool("mg_earth.settings.enable_singlenode_heightmap")		or false,
+	enable_internal_seed		= minetest.settings:get_bool("mg_earth.settings.enable_internal_seed")				or false,
+	enable_internal_mg_flags	= minetest.settings:get_bool("mg_earth.settings.enable_internal_mg_flags")			or false,
 	-- Options: 1-8.  Default = 1.  See table 'mg_heightmap_select_options' below for description.
 	-- 1 = vFlat, 2 = vSpheres, 3 = vCubes, 4 = vDiamonds, 5 = vVoronoiCell, 6 = vTubes, 7 = vPlanetoids, 8 = vPlanets, 9 = vSolarSystem
 	heightmap					= tonumber(minetest.settings:get("mg_earth.settings.heightmap"))					or 1,
@@ -305,8 +307,12 @@ mg_earth.settings = {
 }
 
 --THE FOLLOWING SETTINGS CAN BE CHANGED VIA THE MAIN MENU
-minetest.set_mapgen_setting("seed", mg_earth.settings.seed, true)
-minetest.set_mapgen_setting("mg_flags", "nocaves, nodungeons, light, decorations, biomes, ores", true)
+if mg_earth.settings.enable_internal_seed then
+	minetest.set_mapgen_setting("seed", mg_earth.settings.seed, true)
+end
+if mg_earth.settings.enable_internal_mg_flags then
+	minetest.set_mapgen_setting("mg_flags", "nocaves, nodungeons, light, decorations, biomes, ores", true)
+end
 
 mg_earth.mg_seed = minetest.get_mapgen_setting("seed")
 
