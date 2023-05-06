@@ -184,7 +184,7 @@ mg_earth.settings = {
 	--		Tethys				= "14649545929652778322"
 	--		Anglaea				= "18092077199824008846"
 	--		Other Names:		Hyboria,Sedna,Aramaea,Amarys,Valeria--]]
-	seed						= minetest.settings:get("mg_earth.settings.seed")									or "Terraria",
+	seed						= minetest.settings:get("mg_earth.settings.seed")									or 16096304901732432682,
 	--voronoi_file				= minetest.settings:get("mg_earth.voronoi_file") or "points_earth",
 	--voronoi_file				= "points_earth",					--		"points_dev_isle",
 	voronoi_file				= tonumber(minetest.settings:get("mg_earth.settings.voronoi_file"))					or 1,
