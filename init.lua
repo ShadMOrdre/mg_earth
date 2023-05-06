@@ -138,6 +138,8 @@ mg_earth.settings = {
 	enable_vDev					= minetest.settings:get_bool("mg_earth.settings.enable_vDev")						or false,
 	enable_vDev3D				= minetest.settings:get_bool("mg_earth.settings.enable_vDev3D")						or false,
 	enable_singlenode_heightmap	= minetest.settings:get_bool("mg_earth.settings.enable_singlenode_heightmap")		or false,
+	enable_internal_seed		= minetest.settings:get_bool("mg_earth.settings.enable_internal_seed")				or false,
+	enable_internal_mg_flags	= minetest.settings:get_bool("mg_earth.settings.enable_internal_mg_flags")			or false,
 	-- Options: 1-8.  Default = 1.  See table 'mg_heightmap_select_options' below for description.
 	-- 1 = vFlat, 2 = vSpheres, 3 = vCubes, 4 = vDiamonds, 5 = vVoronoiCell, 6 = vTubes, 7 = vPlanetoids, 8 = vPlanets, 9 = vSolarSystem
 	heightmap					= tonumber(minetest.settings:get("mg_earth.settings.heightmap"))					or 1,
@@ -154,7 +156,7 @@ mg_earth.settings = {
 	--		GardenOfEden		= "1779####",
 	--		Eden				= "4093201477345457311",
 	--			Eden mix		= "7345457311409320147"
-	-- 		Fermat				= "14971822871466973040",	
+	-- 		Fermat				= "14971822871466973040",
 	--		Patience			= "7986080089770239873",
 	--			Patience mix	= "9770239873798608008"
 	--		Home				= "11071344221654115949",
@@ -184,7 +186,7 @@ mg_earth.settings = {
 	--		Tethys				= "14649545929652778322"
 	--		Anglaea				= "18092077199824008846"
 	--		Other Names:		Hyboria,Sedna,Aramaea,Amarys,Valeria--]]
-	seed						= minetest.settings:get("mg_earth.settings.seed")									or "Terraria",
+	seed						= minetest.settings:get("mg_earth.settings.seed")									or 16096304901732432682,
 	--voronoi_file				= minetest.settings:get("mg_earth.voronoi_file") or "points_earth",
 	--voronoi_file				= "points_earth",					--		"points_dev_isle",
 	voronoi_file				= tonumber(minetest.settings:get("mg_earth.settings.voronoi_file"))					or 1,
@@ -305,8 +307,12 @@ mg_earth.settings = {
 }
 
 --THE FOLLOWING SETTINGS CAN BE CHANGED VIA THE MAIN MENU
-minetest.set_mapgen_setting("seed", mg_earth.settings.seed, true)
-minetest.set_mapgen_setting("mg_flags", "nocaves, nodungeons, light, decorations, biomes, ores", true)
+if mg_earth.settings.enable_internal_seed then
+	minetest.set_mapgen_setting("seed", mg_earth.settings.seed, true)
+end
+if mg_earth.settings.enable_internal_mg_flags then
+	minetest.set_mapgen_setting("mg_flags", "nocaves, nodungeons, light, decorations, biomes, ores", true)
+end
 
 mg_earth.mg_seed = minetest.get_mapgen_setting("seed")
 
@@ -584,7 +590,7 @@ if mg_earth.config.enable_v3D == true then
 end
 
 if mg_earth.config.enable_vDiaSqr == true then
-	
+
 	dofile(mg_earth.path_mod.."/heightmap.lua")					--WORKING MAPGEN with and without biomes
 
 	mg_earth.diasq_buf = mg_earth.diasq.create(mg_earth.config.diasq_size, mg_earth.config.diasq_size)
@@ -621,7 +627,7 @@ mg_earth.config.tube_wall_density = 2
 mg_earth.config.mg_valley_size				= mg_earth.config.rivers.width * 5
 
 mg_earth.config.river_size_factor			= mg_earth.config.rivers.width / 100
-	
+
 mg_earth.config.biome_vertical_range		=  mg_base_height / 5
 
 --Sets altitude ranges.
@@ -635,6 +641,8 @@ mg_earth.config.max_highland				= mg_earth.config.max_shelf + mg_earth.config.bi
 mg_earth.config.max_mountain				= mg_earth.config.max_highland + (mg_earth.config.biome_vertical_range * 2)
 
 mg_earth.default							= minetest.global_exists("default")
+mg_earth.mcl_core							= minetest.global_exists("mcl_core")
+mg_earth.mcl_sounds							= minetest.global_exists("mcl_sounds")
 mg_earth.gal								= minetest.global_exists("gal")
 mg_earth.nodes_nature						= minetest.global_exists("nodes_nature")
 mg_earth.mapgen_rivers						= minetest.global_exists("mapgen_rivers")
@@ -690,10 +698,10 @@ if mg_earth.default == true then
 	mg_earth.c_cave_liquid					= minetest.get_content_id("default:lava_source")
 	mg_earth.c_dungeon						= minetest.get_content_id("default:cobble")
 	mg_earth.c_dungeon_alt					= minetest.get_content_id("default:mossycobble")
-	
+
 	mg_earth.c_snow							= minetest.get_content_id("default:snowblock")
 	mg_earth.c_ice							= minetest.get_content_id("default:ice")
-	
+
 	mg_earth.c_path							= minetest.get_content_id("default:dry_dirt")
 	if mg_earth.config.city.style == "gravel" then
 		mg_earth.c_path							= minetest.get_content_id("default:gravel")
@@ -701,6 +709,31 @@ if mg_earth.default == true then
 	mg_earth.c_road							= minetest.get_content_id("default:cobble")
 	mg_earth.c_road_sup						= minetest.get_content_id("default:stone_block")
 	mg_earth.c_lamp							= minetest.get_content_id("default:meselamp")
+elseif mg_earth.mcl_core == true then
+	mg_earth.c_top							= minetest.get_content_id("mcl_core:dirt_with_grass")
+	mg_earth.c_filler						= minetest.get_content_id("mcl_core:dirt")
+	mg_earth.c_stone						= minetest.get_content_id("mcl_core:stone")
+	mg_earth.c_water						= minetest.get_content_id("mcl_core:water_source")
+	mg_earth.c_water_top					= minetest.get_content_id("mcl_core:water_source")
+	mg_earth.c_river						= minetest.get_content_id("mcl_core:water_source")
+	--mg_earth.c_river_bed					= minetest.get_content_id("default:gravel")
+	--mg_earth.c_river_bed					= minetest.get_content_id("default:dirt")
+	mg_earth.c_river_bed					= minetest.get_content_id("mcl_core:sand")
+
+	mg_earth.c_cave_liquid					= minetest.get_content_id("mcl_core:lava_source")
+	mg_earth.c_dungeon						= minetest.get_content_id("mcl_core:cobble")
+	mg_earth.c_dungeon_alt					= minetest.get_content_id("mcl_core:mossycobble")
+
+	mg_earth.c_snow							= minetest.get_content_id("mcl_core:snowblock")
+	mg_earth.c_ice							= minetest.get_content_id("mcl_core:ice")
+
+	mg_earth.c_path							= minetest.get_content_id("mcl_core:coarse_dirt")
+	if mg_earth.config.city.style == "gravel" then
+		mg_earth.c_path							= minetest.get_content_id("mcl_core:gravel")
+	end
+	mg_earth.c_road							= minetest.get_content_id("mcl_core:cobble")
+	mg_earth.c_road_sup						= minetest.get_content_id("mcl_core:stone")
+	mg_earth.c_lamp							= minetest.get_content_id("mcl_ocean:sea_lantern")
 end
 
 if mg_earth.gal == true then
@@ -716,10 +749,10 @@ if mg_earth.gal == true then
 		mg_earth.c_cave_liquid					= minetest.get_content_id("gal:liquid_lava_source")
 		mg_earth.c_dungeon						= minetest.get_content_id("gal:stone_cobble")
 		mg_earth.c_dungeon_alt					= minetest.get_content_id("gal:stone_cobble_mossy")
-		
+
 		mg_earth.c_snow							= minetest.get_content_id("gal:snow_block")
 		mg_earth.c_ice							= minetest.get_content_id("gal:ice")
-		
+
 		-- mg_earth.c_road							= minetest.get_content_id("gal:stone_cobble")
 		mg_earth.c_path							= minetest.get_content_id("gal:dirt_dry")
 		if mg_earth.config.city.style == "gravel" then
@@ -744,6 +777,18 @@ if mg_heightmap_select == "vSolarSystem" then
 		mg_earth.c_uranus						= minetest.get_content_id("default:copperblock")
 		mg_earth.c_neptune						= minetest.get_content_id("default:ice")
 		mg_earth.c_pluto						= minetest.get_content_id("default:bronzeblock")
+	elseif mg_earth.mcl_core then
+		mg_earth.c_sun							= minetest.get_content_id("mcl_nether:glowstone")
+		mg_earth.c_mercury						= minetest.get_content_id("mcl_core:stone")
+		mg_earth.c_venus						= minetest.get_content_id("mcl_core:wood")
+		mg_earth.c_earth						= minetest.get_content_id("mcl_core:diamondblock")
+		mg_earth.c_mars							= minetest.get_content_id("mcl_core:acaciawood")
+		mg_earth.c_jupiter						= minetest.get_content_id("mcl_nether:magma")
+		mg_earth.c_saturn						= minetest.get_content_id("mcl_end:end_stone")
+		mg_earth.c_saturn_rings					= minetest.get_content_id("mcl_core:glass")
+		mg_earth.c_uranus						= minetest.get_content_id("mcl_copper:block")
+		mg_earth.c_neptune						= minetest.get_content_id("mcl_core:ice")
+		mg_earth.c_pluto						= minetest.get_content_id("mcl_colorblocks:hardened_clay_yellow")
 	end
 end
 
@@ -1757,7 +1802,7 @@ end
 --2d noise used to define areas with cliffs.
 mg_earth["np_cliffs"] = {
 	lacunarity = mg_earth.settings.noise.np_cliffs.lacunarity,
-	offset = mg_earth.settings.noise.np_cliffs.offset,					
+	offset = mg_earth.settings.noise.np_cliffs.offset,
 	scale = mg_earth.settings.noise.np_cliffs.scale * mg_world_scale,
 	spread = {x = (mg_earth.settings.noise.np_cliffs.spread.x * mg_world_scale), y = (mg_earth.settings.noise.np_cliffs.spread.y * mg_world_scale), z = (mg_earth.settings.noise.np_cliffs.spread.z * mg_world_scale)},
 	--seed = 78901,
@@ -1870,7 +1915,7 @@ local function max_height(noiseprm)
 	for i=1,noiseprm.octaves do
 		height=height + scale
 		scale = scale * noiseprm.persist
-	end	
+	end
 	return height+noiseprm.offset
 end
 
@@ -1880,7 +1925,7 @@ local function min_height(noiseprm)
 	for i=1,noiseprm.octaves do
 		height=height - scale
 		scale = scale * noiseprm.persist
-	end	
+	end
 	return height+noiseprm.offset
 end
 
@@ -2051,7 +2096,7 @@ local function get_midpoint2(a,b, dist_metric)						--get_midpoint(a,b)
 end
 
 local function get_nearest_midpoint_t(ppoints, pos, dist_type)
-	
+
 	if not pos then
 		return
 	end
@@ -2118,7 +2163,7 @@ local function get_slope(a,b)
 	local rise = a.z-b.z
 	return (rise/run), rise, run
 end
-	
+
 local function get_3d_slope(a,b)
 	local h_run = a.x-b.x
 	local h_rise = a.z-b.z
@@ -2129,7 +2174,7 @@ local function get_3d_slope(a,b)
 
 	return v_slope, v_rise, v_run, h_slope, h_rise, h_run
 end
-	
+
 local function get_slope_inverse(a,b)
 	local run = a.x-b.x
 	local rise = a.z-b.z
@@ -2216,7 +2261,7 @@ local function get_nearest_cell(pos, tier)
 		--chebyshev
 		--local platform = (max(abs(x-center_of_chunk.x), max(abs(y-center_of_chunk.y), abs(z-center_of_chunk.z))))
 		--local cell = (max(abs(x-point.x), max(abs(y-point.y), abs(z-point.z))))
-		
+
 		local pointidx, pointz, pointx, pointtier = unpack(point)
 		local dist_x = abs(pos.x-(tonumber(pointx) * mg_world_scale))
 		local dist_z = abs(pos.z-(tonumber(pointz) * mg_world_scale))
@@ -2226,7 +2271,7 @@ local function get_nearest_cell(pos, tier)
 		--this = ((dist_x * dist_x) + (dist_z * dist_z))^0.5
 
 		if tonumber(pointtier) == tier then
-	
+
 			if last then
 				if last > this then
 					last = this
@@ -2314,7 +2359,7 @@ local function get_nearest_3D_cell(pos, tier)
 		--chebyshev
 		--local platform = (max(abs(x-center_of_chunk.x), max(abs(y-center_of_chunk.y), abs(z-center_of_chunk.z))))
 		--local cell = (max(abs(x-point.x), max(abs(y-point.y), abs(z-point.z))))
-		
+
 		local pointidx, pointz, pointy, pointx, pointtier = unpack(point)
 		local dist_x = abs(pos.x-(tonumber(pointx) * mg_world_scale))
 		local dist_y = abs(pos.y-(tonumber(pointy) * mg_world_scale))
@@ -2326,7 +2371,7 @@ local function get_nearest_3D_cell(pos, tier)
 			--this = ((dist_x * dist_x) + (dist_z * dist_z))^0.5
 
 		if tonumber(pointtier) == tier then
-	
+
 			if last then
 				if last > this then
 					last = this
@@ -2602,7 +2647,7 @@ local function get_cell_neighbors(cell_idx,cell_z,cell_x,cell_tier)
 		t_neighbors = mg_neighbors[cell_idx]
 
 	else
-	
+
 	-- if not mg_neighbors[cell_idx] then
 		-- mg_neighbors[cell_idx] = {}
 	-- end
@@ -2654,7 +2699,7 @@ local function get_cell_neighbors(cell_idx,cell_z,cell_x,cell_tier)
 								-- mg_neighbors[cell_idx][t_cell].m_x = t_mid_x
 								-- mg_neighbors[cell_idx][t_cell].n_z = (tonumber(t_z) * mg_world_scale)
 								-- mg_neighbors[cell_idx][t_cell].n_x = (tonumber(t_x) * mg_world_scale)
-							
+
 								-- neighbor_add = true
 							-- end
 						-- end
@@ -2784,7 +2829,7 @@ end
 
 
 function mg_earth.get_cell_centroid(ppoints)
-	
+
 		local avg_x = 0
 		local avg_z = 0
 
@@ -2792,19 +2837,19 @@ function mg_earth.get_cell_centroid(ppoints)
 		local n_cnt = 1
 
 		for i, i_neighbor in pairs(ppoints) do
-	
+
 			avg_x = avg_x + i_neighbor.m_x
 			avg_z = avg_z + i_neighbor.m_z
-			
+
 			n_cnt = n_cnt + 1
-	
+
 		end
-	
+
 		local c_ctr_x = avg_x / n_cnt
 		local c_ctr_z = avg_z / n_cnt
 
 		return c_ctr_z, c_ctr_x
-	
+
 	end
 
 -- local new_points = ""
@@ -2813,13 +2858,13 @@ function mg_earth.voronoi_smoothing()
 	print(os.clock())
 
 	local new_points = {}
-	
+
 	for i_p, i_point in ipairs(mg_points) do
 
 		local pointidx, pointz, pointx, pointtier = unpack(i_point)
 
 		get_cell_neighbors(tonumber(pointidx), tonumber(pointz) * mg_world_scale, tonumber(pointx) * mg_world_scale, tonumber(pointtier))
-		
+
 		local new_pointz, new_pointx = mg_earth.get_cell_centroid(mg_neighbors[pointidx])
 
 		new_points[i_p] = {tonumber(pointidx), tonumber(new_pointz), tonumber(new_pointx), tonumber(pointtier)}
@@ -2854,13 +2899,13 @@ function mg_earth.get_all_cell_neighbors()
 	-- print(os.clock())
 
 				-- local new_points = {}
-	
+
 	for i_p, i_point in ipairs(mg_points) do
 
 		local pointidx, pointz, pointx, pointtier = unpack(i_point)
 
 		get_cell_neighbors(tonumber(pointidx), tonumber(pointz) * mg_world_scale, tonumber(pointx) * mg_world_scale, tonumber(pointtier))
-		
+
 				-- local new_pointz, new_pointx = mg_earth.get_cell_centroid(mg_neighbors[pointidx])
 
 				-- new_points[i_p] = {tonumber(pointidx), tonumber(new_pointz), tonumber(new_pointx), tonumber(pointtier)}
@@ -2913,7 +2958,7 @@ local function load_neighbors(pfile)
 	if not (t_neighbors == nil) then
 
 		for i_p, p_neighbors in ipairs(t_neighbors) do
-	
+
 			local c_i, n_i, m_z, m_x, n_z, n_x = unpack(p_neighbors)
 
 			if not (mg_neighbors[tonumber(c_i)]) then
@@ -2925,7 +2970,7 @@ local function load_neighbors(pfile)
 			mg_neighbors[tonumber(c_i)][tonumber(n_i)].m_x = tonumber(m_x)
 			mg_neighbors[tonumber(c_i)][tonumber(n_i)].n_z = tonumber(n_z)
 			mg_neighbors[tonumber(c_i)][tonumber(n_i)].n_x = tonumber(n_x)
-	
+
 		end
 
 		minetest.log("[MOD] mg_earth: Voronoi Cell Neighbors loaded from file.")
@@ -2947,7 +2992,7 @@ local function load_3D_neighbors(pfile)
 	if not (t_neighbors == nil) then
 
 		for i_p, p_neighbors in ipairs(t_neighbors) do
-	
+
 			local c_i, n_i, m_z, m_y, m_x, n_z, n_y, n_x = unpack(p_neighbors)
 
 			if not (mg_neighbors[tonumber(c_i)]) then
@@ -2961,7 +3006,7 @@ local function load_3D_neighbors(pfile)
 			mg_neighbors[tonumber(c_i)][tonumber(n_i)].n_z = tonumber(n_z)
 			mg_neighbors[tonumber(c_i)][tonumber(n_i)].n_y = tonumber(n_y)
 			mg_neighbors[tonumber(c_i)][tonumber(n_i)].n_x = tonumber(n_x)
-	
+
 		end
 
 		minetest.log("[MOD] mg_earth: Voronoi Cell Neighbors loaded from file.")
@@ -3063,7 +3108,7 @@ local function update_biomes()
 			mg_earth.biome_info[desc.name].b_maxy = 31000
 			mg_earth.biome_info[desc.name].b_heat = 50
 			mg_earth.biome_info[desc.name].b_humid = 50
-		
+
 
 			if desc.node_top and desc.node_top ~= "" then
 				mg_earth.biome_info[desc.name].b_top = minetest.get_content_id(desc.node_top) or mg_earth.c_top
@@ -3707,8 +3752,8 @@ local function get_terrain_cliffs(theight,z,x)
 
 		-- cliffs
 	local t_cliff = 0
-	if theight > 1 and theight < mg_earth.config.cliffs_thresh then 
-		local clifh = max(min(cheight,1),0) 
+	if theight > 1 and theight < mg_earth.config.cliffs_thresh then
+		local clifh = max(min(cheight,1),0)
 		if clifh > 0 then
 			clifh = -1 * (clifh - 1) * (clifh - 1) + 1
 			t_cliff = clifh
@@ -3726,7 +3771,7 @@ local function get_terrain_carpathia(theight,z,x)
 	local n_hills = minetest.get_perlin(mg_earth["np_carp_hills"]):get_2d({x=x,y=z})
 	local n_mnt_ridge = minetest.get_perlin(mg_earth["np_carp_mnt_ridge"]):get_2d({x=x,y=z})
 	local n_mnt_step = minetest.get_perlin(mg_earth["np_carp_mnt_step"]):get_2d({x=x,y=z})
-	
+
 	local hill_mnt = n_terrain_hills * n_terrain_hills * n_terrain_hills * n_hills * n_hills
 	local ridge_mnt =  n_terrain_ridge * n_terrain_ridge * n_terrain_ridge * (1.0 - abs(n_mnt_ridge))
 	local step_mnt =  n_terrain_step * n_terrain_step * n_terrain_step * steps(n_mnt_step)
@@ -3755,7 +3800,7 @@ local function get_carp_smooth(theight,z,x)
 	local n_hills = minetest.get_perlin(mg_earth["np_carp_hills"]):get_2d({x=x,y=z})
 	local n_mnt_ridge = minetest.get_perlin(mg_earth["np_carp_mnt_ridge"]):get_2d({x=x,y=z})
 	local n_mnt_step = minetest.get_perlin(mg_earth["np_carp_mnt_step"]):get_2d({x=x,y=z})
-	
+
 	local hill_mnt = (n_terrain_hills * n_terrain_hills * n_terrain_hills * n_hills * n_hills) * 0.618033988749
 	local ridge_mnt =  (n_terrain_ridge * n_terrain_ridge * n_terrain_ridge * (1.0 - abs(n_mnt_ridge))) * 0.618033988749
 	local step_mnt =  (n_terrain_step * n_terrain_step * n_terrain_step * steps(n_mnt_step)) * 0.618033988749
@@ -3782,13 +3827,13 @@ local function get_carp_mount(theight,z,x)
 	local n_hills = minetest.get_perlin(mg_earth["np_carp_hills"]):get_2d({x=x,y=z})
 	local n_mnt_ridge = minetest.get_perlin(mg_earth["np_carp_mnt_ridge"]):get_2d({x=x,y=z})
 	local n_mnt_step = minetest.get_perlin(mg_earth["np_carp_mnt_step"]):get_2d({x=x,y=z})
-	
+
 	local hill_mnt = n_terrain_hills * n_terrain_hills * n_terrain_hills * n_hills * n_hills
 	local ridge_mnt =  n_terrain_ridge * n_terrain_ridge * n_terrain_ridge * (1.0 - abs(n_mnt_ridge))
 	local step_mnt =  n_terrain_step * n_terrain_step * n_terrain_step * steps(n_mnt_step)
 
 	local hilliness = theight * 0.0618033988749
-	
+
 	local hills = hill_mnt * hilliness
 	local ridged_mountains = ridge_mnt * hilliness
 	local step_mountains = step_mnt * hilliness
@@ -3820,9 +3865,9 @@ local function get_v5_height(z,x)
 	local h = height
 
 	-- if (ground * f) < (y - h) then
-	
+
 	-- end
-	
+
 	--return f, h, ground
 	return filldepth, f, h
 
@@ -3910,7 +3955,7 @@ local function get_vCarp2d_height(z,x)
 
 	--local n_base = minetest.get_perlin(mg_earth["np_carp_base"]):get_2d({x=x,y=z})
 	--local n_fill = minetest.get_perlin(mg_earth["np_carp_filler_depth"]):get_2d({x=x,y=z})
-	
+
 	local n_terrain_step = abs(minetest.get_perlin(mg_earth["np_carp_terrain_step"]):get_2d({x=x,y=z}))
 	local n_terrain_hills = abs(minetest.get_perlin(mg_earth["np_carp_terrain_hills"]):get_2d({x=x,y=z}))
 	local n_terrain_ridge = abs(minetest.get_perlin(mg_earth["np_carp_terrain_ridge"]):get_2d({x=x,y=z}))
@@ -3921,7 +3966,7 @@ local function get_vCarp2d_height(z,x)
 	local n_hills = minetest.get_perlin(mg_earth["np_carp_hills"]):get_2d({x=x,y=z})
 	local n_mnt_step = minetest.get_perlin(mg_earth["np_carp_mnt_step"]):get_2d({x=x,y=z})
 	local n_mnt_ridge = minetest.get_perlin(mg_earth["np_carp_mnt_ridge"]):get_2d({x=x,y=z})
-	
+
 	local hill_mnt = n_terrain_hills * n_terrain_hills * n_terrain_hills * n_hills * n_hills
 	local ridge_mnt =  n_terrain_ridge * n_terrain_ridge * n_terrain_ridge * (1.0 - abs(n_mnt_ridge))
 
@@ -3955,7 +4000,7 @@ local function get_vCarp2d_vals(z,x)
 
 	--local n_base = minetest.get_perlin(mg_earth["np_carp_base"]):get_2d({x=x,y=z})
 	--local n_fill = minetest.get_perlin(mg_earth["np_carp_filler_depth"]):get_2d({x=x,y=z})
-	
+
 	local n_terrain_step = abs(minetest.get_perlin(mg_earth["np_carp_terrain_step"]):get_2d({x=x,y=z}))
 	local n_terrain_hills = abs(minetest.get_perlin(mg_earth["np_carp_terrain_hills"]):get_2d({x=x,y=z}))
 	local n_terrain_ridge = abs(minetest.get_perlin(mg_earth["np_carp_terrain_ridge"]):get_2d({x=x,y=z}))
@@ -3966,7 +4011,7 @@ local function get_vCarp2d_vals(z,x)
 	local n_hills = minetest.get_perlin(mg_earth["np_carp_hills"]):get_2d({x=x,y=z})
 	local n_mnt_step = minetest.get_perlin(mg_earth["np_carp_mnt_step"]):get_2d({x=x,y=z})
 	local n_mnt_ridge = minetest.get_perlin(mg_earth["np_carp_mnt_ridge"]):get_2d({x=x,y=z})
-	
+
 	local hill_mnt = n_terrain_hills * n_terrain_hills * n_terrain_hills * n_hills * n_hills
 	local ridge_mnt =  n_terrain_ridge * n_terrain_ridge * n_terrain_ridge * (1.0 - abs(n_mnt_ridge))
 	local step_mnt =  n_terrain_step * n_terrain_step * n_terrain_step * steps(n_mnt_step)
@@ -3999,13 +4044,13 @@ local function get_vEarth_height(z,x)
 		local vt_alt2 = (vbase / vcontinental) * ((mg_base_height * 1.4) * 0.1)
 						-- local vt_alt3 = (((mg_base_height * 1.4) * mg_world_scale) / vcontinental) * vbase
 		local vt_alt3 = (((mg_base_height * 1.4) * 0.1) / vcontinental) * vbase
-				
+
 						-- local vterrain = (vbase * 0.25) + (vt_alt1 * 0.25) + (vt_alt2 * 0.25) + (vt_alt3 * 0.25)
 						-- local vterrain = vbase + ((vt_alt1 + vt_alt2 + vt_alt3) / 3)
 						-- local vterrain = vbase + vt_alt1 + vt_alt2 + vt_alt3
 						-- local vterrain = (vbase * 0.1) + ((((vt_alt1 * 0.1) + vt_alt1) + ((vt_alt2 * 0.1) + vt_alt2) + ((vt_alt3 * 0.1) + vt_alt3)) / vcontinental)
 				-- local vterrain = (vbase * 0.25) + ((((vt_alt1 * 0.10) + vt_alt1) + ((vt_alt2 * 0.10) + vt_alt2) + ((vt_alt3 * 0.15) + vt_alt3)) / vcontinental)
-		
+
 		-- local vterrain = (vbase * 0.12) + (vt_alt2 * 0.37)
 		local vterrain = (vbase * 0.12) + ((vt_alt1 + vt_alt2 + vt_alt3) / 3)
 
@@ -4036,18 +4081,18 @@ local function get_vIslands_height(z,x)
 
 	-- local cliffs_thresh = floor((mg_earth["np_v7_alt"].scale) * 0.5)
 	local cheight = minetest.get_perlin(mg_earth["np_cliffs"]):get_2d({x=x,y=z})
-	
+
 	local t_cliff = 0
-	
-	if tterrain > 1 and tterrain < mg_earth.config.cliffs_thresh then 
-		local clifh = max(min(cheight,1),0) 
+
+	if tterrain > 1 and tterrain < mg_earth.config.cliffs_thresh then
+		local clifh = max(min(cheight,1),0)
 		if clifh > 0 then
 			clifh = -1 * (clifh - 1) * (clifh - 1) + 1
 			t_cliff = clifh
 			tterrain = tterrain + (mg_earth.config.cliffs_thresh - tterrain) * clifh * ((tterrain < 2) and tterrain - 1 or 1)
 		end
 	end
-	
+
 	return tterrain, t_cliff
 
 end
@@ -4084,7 +4129,7 @@ local function get_vLargeIslands_height(z,x)
 
 			-- local h_alt = floor(height_alt)
 	-- local h_alt = floor((height_alt * hselect) + (height_base * (1 - hselect)))
-	
+
 	-- local h_peak = floor((floor((height_peak * hselect) + (height_alt * (1 - hselect))) * hselect) + (height_base * (1 - hselect)))
 
 	local h_base = floor(height_base)
@@ -4145,18 +4190,18 @@ local function get_vLargeIslands_height(z,x)
 			-- local n_y, n_c = get_terrain_height_cliffs(aterrain,z,x)
 
 	local cheight = minetest.get_perlin(mg_earth["np_cliffs"]):get_2d({x=x,y=z})
-	
+
 	local t_cliff = 0
-	
-	if aterrain > 1 and aterrain < mg_earth.config.cliffs_thresh then 
-		local clifh = max(min(cheight,1),0) 
+
+	if aterrain > 1 and aterrain < mg_earth.config.cliffs_thresh then
+		local clifh = max(min(cheight,1),0)
 		if clifh > 0 then
 			clifh = -1 * (clifh - 1) * (clifh - 1) + 1
 			t_cliff = clifh
 			aterrain = aterrain + (mg_earth.config.cliffs_thresh - aterrain) * clifh * ((aterrain < 2) and aterrain - 1 or 1)
 		end
 	end
-	
+
 	return aterrain, t_cliff
 
 end
@@ -4196,8 +4241,8 @@ local function get_vAltNatural_height(z,x)
 
 	local surface_level = e_base + mountains
 
-	if surface_level > 1 and surface_level < mg_earth.config.cliffs_thresh then 
-		local clifh = max(min(cheight,1),0) 
+	if surface_level > 1 and surface_level < mg_earth.config.cliffs_thresh then
+		local clifh = max(min(cheight,1),0)
 		if clifh > 0 then
 			clifh = -1 * (clifh - 1) * (clifh - 1) + 1
 			t_cliff = clifh
@@ -4234,8 +4279,8 @@ local function get_vNatural_height(z,x)
 
 	local h_base = floor(height_base)
 
-	if h_base > 1 and h_base < mg_earth.config.cliffs_thresh then 
-		local clifh = max(min(cheight,1),0) 
+	if h_base > 1 and h_base < mg_earth.config.cliffs_thresh then
+		local clifh = max(min(cheight,1),0)
 		if clifh > 0 then
 			clifh = -1 * (clifh - 1) * (clifh - 1) + 1
 			t_cliff = clifh
@@ -4279,14 +4324,14 @@ local function BAK_get_vNatural_height(z,x)
 	-- local height_peak = minetest.get_perlin(mg_earth["np_vnatural_peak"]):get_2d({x=x,y=z})
 
 	local cheight = minetest.get_perlin(mg_earth["np_cliffs"]):get_2d({x=x,y=z})
-	
+
 
 	-- local aterrain = 0
 	local t_cliff = 0
 
 	-- local hselect = rangelim(hselect, 0, 1)
 	local e_base = get_vEarth_height(z,x)
-	
+
 	local hill_mnt = (n_terrain_hills * n_terrain_hills * n_terrain_hills * n_hills * n_hills) * 0.618033988749
 	-- local hill_mnt = n_terrain_hills * n_terrain_hills * n_hills
 	local ridge_mnt =  (n_terrain_ridge * n_terrain_ridge * n_terrain_ridge * (1.0 - abs(n_mnt_ridge))) * 0.618033988749
@@ -4331,15 +4376,15 @@ local function BAK_get_vNatural_height(z,x)
 				-- end
 
 	-- aterrain = h_base
-	if h_base > 1 and h_base < mg_earth.config.cliffs_thresh then 
-		local clifh = max(min(cheight,1),0) 
+	if h_base > 1 and h_base < mg_earth.config.cliffs_thresh then
+		local clifh = max(min(cheight,1),0)
 		if clifh > 0 then
 			clifh = -1 * (clifh - 1) * (clifh - 1) + 1
 			t_cliff = clifh
 			h_base = h_base + (mg_earth.config.cliffs_thresh - h_base) * clifh * ((h_base < 2) and h_base - 1 or 1)
 		end
 	end
-	
+
 
 			-- local com1, com2, com3, com4
 			-- -- com1 = lerp(h_base, h_mount, n_mnt_var)
@@ -4385,18 +4430,18 @@ local function BAK_get_vNatural_height(z,x)
 
 
 	-- local cheight = minetest.get_perlin(mg_earth["np_cliffs"]):get_2d({x=x,y=z})
-	
+
 	-- local t_cliff = 0
-	
-	-- if surface_level > 1 and surface_level < mg_earth.config.cliffs_thresh then 
-		-- local clifh = max(min(cheight,1),0) 
+
+	-- if surface_level > 1 and surface_level < mg_earth.config.cliffs_thresh then
+		-- local clifh = max(min(cheight,1),0)
 		-- if clifh > 0 then
 			-- clifh = -1 * (clifh - 1) * (clifh - 1) + 1
 			-- t_cliff = clifh
 			-- surface_level = surface_level + (mg_earth.config.cliffs_thresh - surface_level) * clifh * ((surface_level < 2) and surface_level - 1 or 1)
 		-- end
 	-- end
-	
+
 	-- return aterrain
 	-- return surface_level
 	return surface_level, t_cliff
@@ -4491,10 +4536,10 @@ local function get_mg_heightmap(ppos,nheat,nhumid,i2d)
 
 	local r_y						= -31000
 	local r_c						= 0
-	
+
 	local mp_y						= 0
 	local mpheight					= 0
-	
+
 	local vheight					= 0
 	local nheight					= 0
 	local n_c						= 0
@@ -4541,7 +4586,7 @@ local function get_mg_heightmap(ppos,nheat,nhumid,i2d)
 
 			-- vSinglenode_height = mapgen_rivers.heightmap[i2d]
 			-- mg_earth.lakemap[i2d] = mapgen_rivers.lakemap[i2d]
-			
+
 			-- if mapgen_rivers.lakemap[i2d] > mapgen_rivers.heightmap[i2d] then
 				-- mg_earth.rivermap[i2d] = mapgen_rivers.lakemap[i2d] - mapgen_rivers.heightmap[i2d]
 			-- else
@@ -4686,7 +4731,7 @@ local function get_mg_heightmap(ppos,nheat,nhumid,i2d)
 			vDiaSqr_height = t_y
 		end
 	end
-	
+
 	if mg_earth.config.enable_v2d_noise == true then
 
 		v2d_noise_height = minetest.get_perlin(mg_earth["np_2d_base"]):get_2d({x = ppos.x, y = ppos.z})
@@ -4703,7 +4748,7 @@ local function get_mg_heightmap(ppos,nheat,nhumid,i2d)
 			v3d_noise_height = t_y
 		end
 	end
-	
+
 	if mg_earth.config.enable_v3D == true then
 		local t_y = r_y
 		local h_y = mg_earth.heightmap[i2d]
@@ -4763,7 +4808,7 @@ local function get_mg_heightmap(ppos,nheat,nhumid,i2d)
 
 				-- vDev_height = nheat + nhumid
 				-- vDev_height = minetest.get_perlin(mg_earth["np_2d_base"]):get_2d({x = ppos.x, y = ppos.z}) * (1 / nhumid)
-		
+
 			-- local t_terrain = minetest.get_perlin(mg_earth["np_2d_base"]):get_2d({x = ppos.x, y = ppos.z})
 		-- local t_terrain = get_vLargeIslands_height(ppos.z,ppos.x)
 			-- vDev_height = t_terrain * (nhumid / humid_max)
@@ -4819,7 +4864,7 @@ local function get_mg_heightmap(ppos,nheat,nhumid,i2d)
 	end
 
 	if mg_earth.config.enable_voronoi == true then
-		
+
 		local m_idx, m_dist, m_z, m_x = get_nearest_cell({x = ppos.x, z = ppos.z}, 1)
 		local p_idx, p_dist, p_z, p_x = get_nearest_cell({x = ppos.x, z = ppos.z}, 2)
 
@@ -4841,7 +4886,7 @@ local function get_mg_heightmap(ppos,nheat,nhumid,i2d)
 				-- get_cell_neighbors(p_idx, p_z, p_x, 2)
 
 				-- local pm_idx, pm_dist, pm_z, pm_x = get_nearest_cell({x = p_x, z = p_z}, 1)
-				
+
 				-- if m_idx ~= pm_idx then
 					-- m_dist = (m_dist + pm_dist) / 2
 				-- end
@@ -4930,7 +4975,7 @@ local function get_mg_heightmap(ppos,nheat,nhumid,i2d)
 
 		local valt = (vbase / vcontinental) * (mg_world_scale / 0.01)
 			-- local mpalt = (mpbase / mpcontinental) * (mg_world_scale / 0.01)
-		
+
 		local vterrain = (vbase * 0.2) + (valt * 0.37)
 					-- local vterrain = (vbase * 0.25) + (valt * 0.5)
 					-- local vterrain = (mg_base_height * -1.4) + vcontinental
@@ -4952,7 +4997,7 @@ local function get_mg_heightmap(ppos,nheat,nhumid,i2d)
 		-- local vt_alt2 = (vbase / vcontinental) * ((mg_base_height * 1.4) * 0.1)
 				-- local vt_alt3 = (((mg_base_height * 1.4) * mg_world_scale) / vcontinental) * vbase
 		-- local vt_alt3 = (((mg_base_height * 1.4) * 0.1) / vcontinental) * vbase
-		
+
 				-- local vterrain = (vbase * 0.25) + (vt_alt1 * 0.25) + (vt_alt2 * 0.25) + (vt_alt3 * 0.25)
 				-- local vterrain = vbase + ((vt_alt1 + vt_alt2 + vt_alt3) / 3)
 				-- local vterrain = vbase + vt_alt1 + vt_alt2 + vt_alt3
@@ -5158,7 +5203,7 @@ local function get_mg_heightmap(ppos,nheat,nhumid,i2d)
 		r_y = nheight
 
 	end
-	
+
 	-- if (mg_earth.config.enable_heightmap == true) and (mg_heightmap_select == "vFlat") then
 	if (mg_earth.config.enable_heightmap == true) then
 		r_y = mg_earth.config.mg_flat_height
@@ -5360,7 +5405,7 @@ local function make_boulder(pos,area,data,form,c_stone,c_fill,c_top)
 				local last
 				local this
 				for i, point in ipairs(chunk_points) do
-				
+
 					this = get_3d_dist((i_x - point.x),(i_y - point.y),(i_z - point.z),dist_metric)
 
 					if last then
@@ -5380,11 +5425,11 @@ local function make_boulder(pos,area,data,form,c_stone,c_fill,c_top)
 				end
 
 				if thisidx == chunk_idx then
-				
+
 					local c_x = i_x - h_x
 					local c_y = i_y - h_y
 					local c_z = i_z - h_z
-				
+
 					-- local vi = area:index(pos.x+c_x, pos.y+c_y, pos.z+c_z)
 					local vi = area:index(pos.x+c_x, pos.y+c_y, pos.z+c_z)
 
@@ -5402,11 +5447,11 @@ local function make_boulder(pos,area,data,form,c_stone,c_fill,c_top)
 						data[vi] = c_stone
 					-- end
 				end
-				
+
 			end
 		end
 	end
-	
+
 end
 
 local function make_road(minp, maxp, area, data)
@@ -5617,7 +5662,7 @@ local function make_road(minp, maxp, area, data)
 			i2d = i2d + 1
 		end
 	end
-	
+
 
 end
 
@@ -5830,7 +5875,7 @@ local function make_street(minp, maxp, area, data)
 			i2d = i2d + 1
 		end
 	end
-	
+
 
 end
 
@@ -5849,7 +5894,7 @@ minetest.register_chatcommand("load_area", {
 	end
 
 	local pos1 = {x=tonumber(s_x1), y=tonumber(s_y1), z=tonumber(s_z1)}
-	local pos2 = {x=tonumber(s_x2), y=tonumber(s_y2), z=tonumber(s_z2)}	
+	local pos2 = {x=tonumber(s_x2), y=tonumber(s_y2), z=tonumber(s_z2)}
 
 	local start_time = minetest.get_us_time()
 
@@ -5866,7 +5911,7 @@ minetest.register_chatcommand("load_area", {
 		-- else
 			-- --minetest.chat_send_player(name, "(mapgen-"..remaining.."-"..dt.."s) Visited block at "..(blockpos.x)..","..(blockpos.y)..","..(blockpos.z))
 		-- end
-	
+
 		-- if remaining<=0 then
 			-- minetest.chat_send_player(name, "(mapgen-"..dt.."ms) Generation done.")
 		-- end
@@ -5891,7 +5936,7 @@ minetest.register_chatcommand("emerge_area", {
 	end
 
 	local pos1 = {x=tonumber(s_x1), y=tonumber(s_y1), z=tonumber(s_z1)}
-	local pos2 = {x=tonumber(s_x2), y=tonumber(s_y2), z=tonumber(s_z2)}	
+	local pos2 = {x=tonumber(s_x2), y=tonumber(s_y2), z=tonumber(s_z2)}
 
 	local start_time = minetest.get_us_time()
 
@@ -5907,7 +5952,7 @@ minetest.register_chatcommand("emerge_area", {
 		else
 			--minetest.chat_send_player(name, "(mapgen-"..remaining.."-"..dt.."s) Visited block at "..(blockpos.x)..","..(blockpos.y)..","..(blockpos.z))
 		end
-	
+
 		if remaining<=0 then
 			minetest.chat_send_player(name, "(mapgen-"..dt.."ms) Generation done.")
 		end
@@ -5965,7 +6010,7 @@ minetest.register_chatcommand("emerge_radius", {
 		else
 			--minetest.chat_send_player(name, "(mapgen-"..remaining.."-"..dt.."s) Visited block at "..(blockpos.x)..","..(blockpos.y)..","..(blockpos.z))
 		end
-	
+
 		if remaining<=0 then
 			minetest.chat_send_player(name, "(mapgen-"..dt.."ms) Generation done.")
 		end
@@ -6072,7 +6117,7 @@ local function generate_2dNoise_map(minp, maxp, seed)
 	end
 
 	if mg_earth.config.enable_vDiaSqr == true then
-	
+
 		local index2d = 1
 
 		for z = minp.z, maxp.z do
@@ -6201,13 +6246,13 @@ local function generate_3dNoise_map(minp, maxp, seed)
 				for x = minp.x, maxp.x do
 
 					local n_f = 0
-					
+
 					if mg_world_scale == 1 then
 						n_f = nbuf_3d_noise[z-minp.z+1][y-minp.y+1][x-minp.x+1]
 					else
 						n_f = minetest.get_perlin(mg_earth["np_3d_noise"]):get_3d({x = x, y = y, z = z})
 					end
-					
+
 					-- mg_earth.heightmap[index2d] = nvals_3d_noise[index3d]
 					mg_earth.heightmap[index2d] = n_f
 
@@ -6233,19 +6278,19 @@ local function generate_3dNoise_map(minp, maxp, seed)
 				for x = minp.x, maxp.x do
 
 					local n_f = 0
-					
+
 					if mg_world_scale == 1 then
 						n_f = nbuf_3dterrain[z-minp.z+1][y-minp.y+1][x-minp.x+1]
 					else
 						n_f = minetest.get_perlin(mg_earth["np_3dterrain"]):get_3d({x = x, y = y, z = z})
 					end
-					
+
 					local density = (n_f + ((1 - y) / (mg_earth.config.terrain_density * mg_world_scale)))
 
 					if density > 0 then
 						mg_earth.heightmap[index2d] = y
 					end
-					
+
 					mg_earth.densitymap[index3d] = density
 
 					index2d = index2d + 1
@@ -6281,13 +6326,13 @@ local function generate_3dNoise_map(minp, maxp, seed)
 					local step_mnt = mg_earth.carpmap[index2d].step_mnt
 
 					local n_mnt_var = 0
-					
+
 					if mg_world_scale == 1 then
 						n_mnt_var = nbuf_carp_mnt_var[z-minp.z+1][y-minp.y+1][x-minp.x+1]
 					else
 						n_mnt_var = minetest.get_perlin(mg_earth["np_carp_mnt_var"]):get_3d({x = x, y = y, z = z})
 					end
-					
+
 
 					local com1, com2, com3, com4
 					com1 = lerp(n_theight1, n_theight2, n_mnt_var)
@@ -6362,7 +6407,7 @@ local function generate_3dNoise_map(minp, maxp, seed)
 
 		local index2d = 1
 		local index3d = 1
-		
+
 		for z = minp.z, maxp.z do
 			for y = minp.y, maxp.y do
 				for x = minp.x, maxp.x do
@@ -6371,7 +6416,7 @@ local function generate_3dNoise_map(minp, maxp, seed)
 					local factor = mg_earth.v5_factormap[index2d]
 					local height = mg_earth.v5_heightmap[index2d]
 					local ground = 0
-					
+
 					if mg_world_scale == 1 then
 						ground = nbuf_v5_ground[z-minp.z+1][y-minp.y+1][x-minp.x+1]
 					else
@@ -6849,7 +6894,7 @@ local function generate_2d_roads(minp, maxp, area)
 			z_avg = floor((z8sn_t + z7sn_t + z6sn_t + z5sn_t + z4sn_t + z3sn_t + z2sn_t + z1sn_t + t_height + z1sp_t + z2sp_t + z3sp_t + z4sp_t + z5sp_t + z6sp_t + z7sp_t + z8sp_t) / 17)
 			-- z_avg = floor((zsp_t + zosp_t + zisp_t + ziisp_t + t_height + ziisn_t + zisn_t + zosn_t + zsn_t) / 9) * (1 / min(1, (zs_t_diff * 0.5)))
 			-- z_avg = floor((zsp_t + zosp_t + zisp_t + ziisp_t + t_height + ziisn_t + zisn_t + zosn_t + zsn_t) / 9) / max(1, (zs_t_diff^0.5))
-			
+
 			local txa_diff = t_height - x_avg
 			local tza_diff = t_height - z_avg
 
@@ -6881,7 +6926,7 @@ local function generate_2d_roads(minp, maxp, area)
 				-- tblend = min(max(tblend, 0), 1)
 				-- -- xtblend = min(max(xtblend, 0), 1)
 				-- -- ztblend = min(max(ztblend, 0), 1)
-				
+
 				-- -- local blend = lerp(sblend,tblend,0.25)
 				local blend = sblend
 
@@ -7001,7 +7046,7 @@ local function generate_2d_roads(minp, maxp, area)
 					mg_earth.streetheight[i2d]	= -31000
 					mg_earth.streetdirmap[i2d]	= 0
 				end
-				
+
 				local street_height
 
 				-- x_dist = get_dist2line({x = xsn_t, z = 0}, {x = xsp_t, z = 9}, {x = t_height, z = 4}) * sin_scale
@@ -7094,7 +7139,7 @@ local function generate_2d_roads(minp, maxp, area)
 				--Find the nearest grid line, create a sine wave along the perpendicular axis.
 				local x_i, x_f = modf(x / mg_earth.config.roads.grid_width)
 				local z_i, z_f = modf(z / mg_earth.config.roads.grid_width)
-				
+
 				local x_line, z_line, x_sin, z_sin
 				if (x_f > -0.5) and (x_f < 0.5) then
 					x_line = x_i * mg_earth.config.roads.grid_width
@@ -7272,7 +7317,7 @@ local function generate_2d_roads(minp, maxp, area)
 				--Find the nearest grid line, create a sine wave along the perpendicular axis.
 				local x_i, x_f = modf(x / mg_earth.config.streets.grid_width)
 				local z_i, z_f = modf(z / mg_earth.config.streets.grid_width)
-				
+
 				local x_line, z_line, x_sin, z_sin
 				if (x_f > -0.5) and (x_f < 0.5) then
 					x_line = x_i * mg_earth.config.streets.grid_width
@@ -7551,7 +7596,7 @@ local function generate_2d_roads(minp, maxp, area)
 
 		end
 	end
-	
+
 
 end
 
@@ -7748,7 +7793,7 @@ local function generate_2d_map(minp, maxp, seed, area)
 	if mg_earth.config.mg_lakes_enabled then
 		get_lakes(minp, maxp)
 	end
-	
+
 end
 
 local function generate_3d_map(minp, maxp, seed)
@@ -7765,7 +7810,7 @@ local function generate_3d_map(minp, maxp, seed)
 				-- if y <= t_height then
 					-- mg_earth.heightmap_3d_flat[index3d] = t_height
 				-- else
-				
+
 				-- end
 
 			-- end
@@ -7821,7 +7866,7 @@ local function generate_map(minp, maxp, seed)
 	local chunk_rand_dm_x = random(4)
 	local chunk_rand_dm_y = random(4)
 	local chunk_rand_dm_z = random(4)
-	
+
 	local index2d = 1
 	local index3d = 1
 
@@ -7846,7 +7891,7 @@ local function generate_map(minp, maxp, seed)
 	end
 ----------------------------------------------------------------------
 
-	
+
 	mg_timer["loop2D"] = os.clock()
 	print("Time elapsed: "..tostring( mg_timer["loop2D"] - mg_timer["loop3D"] ));
 
@@ -8130,7 +8175,7 @@ local function generate_map(minp, maxp, seed)
 				if (mg_earth.config.enable_vValleys == true) and (mg_earth.config.enable_3d_ver == true) then
 
 					write_3d = false
-					
+
 					local den = mg_earth.densitymap[index3d]
 
 					if den > 0 then -- If solid
@@ -8309,7 +8354,7 @@ local function generate_map(minp, maxp, seed)
 												t_node = t_air
 											end
 										else
-										
+
 										end
 									end
 								end
@@ -8326,7 +8371,7 @@ local function generate_map(minp, maxp, seed)
 									-- t_node = t_air
 								-- end
 							end
-						end							
+						end
 					end
 				end
 
@@ -8384,7 +8429,7 @@ local function generate_map(minp, maxp, seed)
 									local last
 									local this
 									for i, point in ipairs(chunk_points) do
-									
+
 										this = get_3d_dist((x - point.x),(y - point.y),(z - point.z),"m")
 
 										if last then
@@ -8464,7 +8509,7 @@ local function generate_map(minp, maxp, seed)
 								local last
 								local this
 								for i, point in ipairs(chunk_points) do
-								
+
 									this = get_3d_dist((x - point.x),(y - point.y),(z - point.z),"m") / 2
 
 									if last then
@@ -8595,7 +8640,7 @@ local function generate_map(minp, maxp, seed)
 						end
 					end
 				end
-			
+
 				if mg_earth.config.enable_heightmap == true then
 
 					if mg_heightmap_select == "vSpheres" or mg_heightmap_select == "vCubes" or mg_heightmap_select == "vDiamonds" then
@@ -8643,7 +8688,7 @@ local function generate_map(minp, maxp, seed)
 					end
 
 					if mg_heightmap_select == "vPlanets" then
-					
+
 						local m = {}
 
 						m.m_idx, m.m_dist, m.m_z, m.m_y, m.m_x = get_nearest_3D_cell({x = x, y = y, z = z}, 1)
@@ -8670,7 +8715,7 @@ local function generate_map(minp, maxp, seed)
 					end
 
 					if mg_heightmap_select == "vSolarSystem" then
-					
+
 						local m = {}
 
 						m.m_idx, m.m_dist, m.m_z, m.m_y, m.m_x = get_nearest_3D_cell({x = x, y = y, z = z}, 1)
@@ -8682,7 +8727,7 @@ local function generate_map(minp, maxp, seed)
 						local ring_size = 0
 						local ring_gap = 0
 						local moon_orbit = 0
-						
+
 						if m.m_idx == 1 then
 							planet_size = 432
 							t_top = mg_earth.c_sun
@@ -8774,7 +8819,7 @@ local function generate_map(minp, maxp, seed)
 							local last
 							local this
 							for i, point in ipairs(chunk_points) do
-							
+
 								this = get_3d_dist((x - point.x),(y - point.y),(z - point.z),mg_earth.config.dist_metric)
 
 								if last then
@@ -8810,7 +8855,7 @@ local function generate_map(minp, maxp, seed)
 					end
 
 					if mg_heightmap_select == "vTubes" then
-						
+
 						if maxp.y < 0 or minp.y > 0 then
 							return
 						else
@@ -8874,7 +8919,7 @@ local function generate_map(minp, maxp, seed)
 					if mg_heightmap_select == "vRand2D" then
 
 						-- t_node = t_ignore
-						
+
 						-- local n = {}
 
 										-- --n["n_2d_base"] = minetest.get_perlin(mg_earth["np_2d_base"]):get_2d({x = x, y = z})
@@ -8888,18 +8933,18 @@ local function generate_map(minp, maxp, seed)
 						p["p_idx"], p["p_z"], p["p_x"], p["p_t"] = unpack(mg_points[mg_earth.cellmap[index2d].p_i])
 								-- -- -- p["p_idx"], p["p_dist"], p["p_z"], p["p_x"] = get_nearest_cell({x = x, z = z}, 2)
 								-- -- -- get_cell_neighbors(p.p_idx, p.p_z, p.p_x, 2)
-						
-						
+
+
 								-- m["m_dist"] = get_dist(((m.m_x * mg_world_scale) - x), ((m.m_z * mg_world_scale) - z), dist_metric)
 								-- p["p_dist"] = get_dist(((p.p_x * mg_world_scale) - x), ((p.p_z * mg_world_scale) - z), dist_metric)
-						
-						
+
+
 								-- local m_n = mg_neighbors[m.m_idx]
 								-- --local m_ni = get_farthest_neighbor({x = m.m_x, z = m.m_z}, m_n)
 								-- local m_ni = get_nearest_neighbor({x = x, z = z}, m_n)
 								-- local p_n = mg_neighbors[p.p_idx]
 								-- local p_ni = get_nearest_neighbor({x = x, z = z}, p_n)
-						
+
 
 						local d = {}
 
@@ -8978,7 +9023,7 @@ local function generate_map(minp, maxp, seed)
 													-- elseif y == n.n_2d_base then
 														-- t_node = t_top
 													-- end
-													
+
 
 													-- if y == 1 then
 														-- if sin(x) > sin(z) then
@@ -8991,7 +9036,7 @@ local function generate_map(minp, maxp, seed)
 															-- t_node = t_stone
 														-- end
 													-- end
-													
+
 
 													-- local n_f = minetest.get_perlin(np_3dterrain):get_3d({x = x, y = y, z = z})
 													-- if n_f == 0 then
@@ -9096,7 +9141,7 @@ local function generate_map(minp, maxp, seed)
 					end
 
 				end
-				
+
 				if mg_earth.config.enable_vDev3D == true then
 
 					if maxp.y < 0 or minp.y > 160 then
@@ -9207,7 +9252,7 @@ local function generate_map(minp, maxp, seed)
 					end
 
 					if (mg_earth.config.enable_vValleys == true) and (mg_earth.config.enable_3d_ver == true) then
-					
+
 						if (write_3d == false) and (y <= mg_water_level) and ((t_node == t_ignore) or (t_node == t_air)) then
 							t_node = t_water
 						end
@@ -9238,12 +9283,12 @@ local function generate_map(minp, maxp, seed)
 	end
 
 	mg_timer["setdata"] = os.clock()
-	
+
 	if write then
 
 		minetest.generate_ores(vm,minp,maxp)
 		minetest.generate_decorations(vm,minp,maxp)
-			
+
 		vm:set_lighting({day = 0, night = 0})
 		vm:calc_lighting()
 		vm:update_liquids()
@@ -9362,7 +9407,7 @@ local function mg_earth_spawnplayer(player)
 	if ysp then
 		print ("[noisegrid] spawn player (" .. xsp .. " " .. ysp .. " " .. zsp .. ")")
 		player:set_pos({x = xsp, y = ysp, z = zsp})
-	else	
+	else
 		print ("[noisegrid] no suitable spawn found")
 		player:set_pos({x = 0, y = 2, z = 0})
 	end
@@ -9403,7 +9448,7 @@ minetest.register_on_shutdown(function()
 		save_neighbors(n_file)
 	end
 
-	
+
 	if #mg_earth.mapgen_times.make_chunk == 0 then
 		return
 	end

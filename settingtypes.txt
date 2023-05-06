@@ -135,8 +135,8 @@ mg_earth.settings.paths.min_height (Sets the minimum height of path surface.  De
 #Sets the path_max_height.  Default is 60.
 mg_earth.settings.paths.max_height (Sets the maximum height of path surface.  Default is 60.) int 60 11 300
 
-#Sets the path_terrain_min_height.  (Currently not used.)  Default is -2.
-mg_earth.settings.paths.terrain_min_height (Sets the minimum terrain height over which to draw paths.  (Currently not used.)  Default is -2.) int -2 -31000 31000
+#Sets the path_terrain_min_height.  (Currently unused.)  Default is -2.
+mg_earth.settings.paths.terrain_min_height (Sets the minimum terrain height over which to draw paths, currently unused. Default is -2.) int -2 -31000 31000
 
 #If enabled, will generate city grids along the terrain.  Default is false.
 mg_earth.settings.cities.enable (If enabled, will generate paths along the terrain.  true / false) bool false
@@ -226,10 +226,16 @@ mg_earth.settings.enable_vDev3D (Enables use of experimental 3D development mapg
 mg_earth.settings.enable_singlenode_heightmap (Enables use of other singlenode based mapgens.  Can be used with other options.  true / false) bool false
 
 #Selects from 9 options for unique terrain generation.  1 = vFlat, 2 = vSpheres, 3 = vCubes, 4 = vDiamonds, 5 = vVoronoiCell, 6 = vTubes, 7 = vPlanetoids, 8 = vPlanets, 9 = vSolarSystem.  Default is 1.
-mg_earth.settings.heightmap (Selects from 8 options for terrain generation.  (See readme for details.)  Default is 1.) int 1 1 8
+mg_earth.settings.heightmap (Selects from 8 options for terrain generation, see readme for details.  Default is 1.) int 1 1 8
 
 #Selects how distance is measured.  Options are 1 = chebyshev, 2 = euclidean, 3 = manhattan, 4 = chebyshev plus manattan divided by 2.  Default is 4.
 mg_earth.settings.voronoi_distance (Selects how distance is measured.  Options are 1 = chebyshev, 2 = euclidean, 3 = manhattan, 4 = chebyshev plus manattan divided by 2.  Default is 4.) int 4 1 4
+
+#Enable internal map seed. Default is false.
+mg_earth.settings.enable_internal_seed (Enable internal map seed. true / false) bool false
+
+#Enable internal mapgen flags. Default is false.
+mg_earth.settings.enable_internal_mg_flags (Enable internal mapgen flags. true / false) bool false
 
 #	--manual seed options.		The named seeds below were used during dev, but were interesting enough to include.  The names were entered in the menu, and these resulted.
 #	--Default					= Terraria
