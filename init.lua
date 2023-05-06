@@ -733,7 +733,7 @@ elseif mg_earth.mcl_core == true then
 	end
 	mg_earth.c_road							= minetest.get_content_id("mcl_core:cobble")
 	mg_earth.c_road_sup						= minetest.get_content_id("mcl_core:stone")
-	mg_earth.c_lamp							= minetest.get_content_id("mcl_nether:glowstone")
+	mg_earth.c_lamp							= minetest.get_content_id("mcl_ocean:sea_lantern")
 end
 
 if mg_earth.gal == true then
